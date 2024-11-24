@@ -24,10 +24,10 @@ class ProcessedFrame:
                 processed_frames.append(frame)
 
     @staticmethod
-    def from_video(video_path, ocr_strategy: OCRStrategy, ocr_approval_strategy: OCRApprovalStrategy):
+    def from_video(video_path, ocr_strategy: OCRStrategy, ocr_approval_strategy: OCRApprovalStrategy, start_seconds=0, end_seconds=None):
         processed_frames = []
         old_frame = None
-        for frame in VideoProcessor.get_frames(video_path, 3):
+        for frame in VideoProcessor.get_frames(video_path, 3, start_seconds, end_seconds):
             
             if not ocr_approval_strategy.permit_ocr(frame.frame, old_frame):
                 # result should be same as previous frame

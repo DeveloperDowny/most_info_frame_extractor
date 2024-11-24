@@ -21,11 +21,15 @@ class LocalVideoInputStrategy(InputStrategy):
         ocr_strategy: OCRStrategy,
         extraction_strategy: ExtractionStrategy,
         ocr_approval_strategy: OCRApprovalStrategy,
+        start_seconds: int = 0,
+        end_seconds: int = None,
     ):
         self.directory = os.path.join(BASE_DIR, directory)
         self.ocr_strategy = ocr_strategy
         self.extraction_strategy = extraction_strategy
         self.ocr_approval_strategy = ocr_approval_strategy
+        self.start_seconds = start_seconds
+        self.end_seconds = end_seconds
 
     def proceed(self):
         suffix = RandomGenerator.generate_random_word(3)
@@ -39,7 +43,7 @@ class LocalVideoInputStrategy(InputStrategy):
         Helper.index_results(new_directory, video_path)
 
         processed_frames = ProcessedFrame.from_video(
-            video_path, self.ocr_strategy, self.ocr_approval_strategy
+            video_path, self.ocr_strategy, self.ocr_approval_strategy, self.start_seconds, self.end_seconds
         )
 
         Helper.log(f"Processed {len(processed_frames)} frames")

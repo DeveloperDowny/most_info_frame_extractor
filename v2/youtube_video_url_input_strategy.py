@@ -23,11 +23,15 @@ class YouTubeVideoURLInputStrategy(InputStrategy):
         ocr_strategy: OCRStrategy,
         extraction_strategy: ExtractionStrategy,
         ocr_approval_strategy: OCRApprovalStrategy,
+        start_seconds: int = 0,
+        end_seconds: int = None,
     ):
         self.video_url = video_url
         self.ocr_strategy = ocr_strategy
         self.extraction_strategy = extraction_strategy
         self.ocr_approval_strategy = ocr_approval_strategy
+        self.start_seconds = start_seconds
+        self.end_seconds = end_seconds
 
     def proceed(self):
         directory = RandomGenerator.generate_random_word(6)
@@ -42,7 +46,13 @@ class YouTubeVideoURLInputStrategy(InputStrategy):
 
         Helper.index_results(directory, video_path)
 
-        processed_frames = ProcessedFrame.from_video(video_path, self.ocr_strategy, self.ocr_approval_strategy)
+        processed_frames = ProcessedFrame.from_video(
+            video_path,
+            self.ocr_strategy,
+            self.ocr_approval_strategy,
+            self.start_seconds,
+            self.end_seconds,
+        )
 
         Helper.save_objects(video_path, processed_frames, directory)
 

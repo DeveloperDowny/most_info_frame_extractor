@@ -13,13 +13,27 @@ class InputStrategyFactory:
     ) -> InputStrategy:
         if input_type == "youtube":
             video_url = input("Enter YouTube video URL: ")
+            start_seconds = int(input("Enter start seconds: "))
+            end_seconds = int(input("Enter end seconds: "))
             return YouTubeVideoURLInputStrategy(
-                video_url, ocr_strategy, extraction_strategy, ocr_approval_strategy
+                video_url,
+                ocr_strategy,
+                extraction_strategy,
+                ocr_approval_strategy,
+                start_seconds,
+                end_seconds,
             )
         elif input_type == "local":
             directory = input("Enter directory path: ")
+            start_seconds = int(input("Enter start seconds: "))
+            end_seconds = int(input("Enter end seconds: "))
             return LocalVideoInputStrategy(
-                directory, ocr_strategy, extraction_strategy, ocr_approval_strategy
+                directory,
+                ocr_strategy,
+                extraction_strategy,
+                ocr_approval_strategy,
+                start_seconds,
+                end_seconds,
             )
         elif input_type == "object":
             """The directory path should be like this `xxxxxx_python_object`"""

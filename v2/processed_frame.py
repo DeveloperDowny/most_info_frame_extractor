@@ -24,11 +24,15 @@ class ProcessedFrame:
                 processed_frames.append(frame)
 
     @staticmethod
-    def from_video(video_path, ocr_strategy: OCRStrategy, ocr_approval_strategy: OCRApprovalStrategy):
+    def from_video(
+        video_path,
+        ocr_strategy: OCRStrategy,
+        ocr_approval_strategy: OCRApprovalStrategy,
+    ):
         processed_frames = []
         old_frame = None
         for frame in VideoProcessor.get_frames(video_path, 3):
-            
+
             if not ocr_approval_strategy.permit_ocr(frame.frame, old_frame):
                 # result should be same as previous frame
                 processed_frame = ProcessedFrame()
@@ -55,6 +59,9 @@ class ProcessedFrame:
     def get_data_for_plotting(processed_frames):
         x_data = [frame.frame_number for frame in processed_frames]
         y_data = [len(frame.ocr_text) for frame in processed_frames]
+        # linear_equation => y = 10x + 10
+        for i in range(len(y_data)):
+            y_data[i] += 1 * (i + 1)
         return x_data, y_data
 
 

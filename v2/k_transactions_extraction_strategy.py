@@ -73,10 +73,12 @@ class KTransactionsExtractionStrategy(ExtractionStrategy):
         return profit[n - 1][k], transactions[n - 1][k]
 
     def extract_frames(self, frames: List[ProcessedFrame]) -> List[ProcessedFrame]:
-        # Create the signal from frames
-        data = [(frame.frame_number, frame.ocr_text) for frame in frames]
-        df = pd.DataFrame(data, columns=["frame_id", "text"])
-        df["char_count"] = df["text"].apply(len)
+        # # Create the signal from frames
+        # data = [(frame.frame_number, frame.ocr_text) for frame in frames]
+        # df = pd.DataFrame(data, columns=["frame_id", "text"])
+        # df["char_count"] = df["text"].apply(len)
+        x_data, y_data = ProcessedFrame.get_data_for_plotting(frames)
+        df = pd.DataFrame({"frame_id": x_data, "char_count": y_data})
 
         # Generate x and y coordinates for signal processing
         x = df.index.values
@@ -88,7 +90,7 @@ class KTransactionsExtractionStrategy(ExtractionStrategy):
             # Set k as the number of detected peaks
             self.k = len(peaks)
             print(f"Detected {self.k} significant transitions in the signal")
-        
+
         else:
             # Calculate k using signal processing if not already set
             if self.k is None:

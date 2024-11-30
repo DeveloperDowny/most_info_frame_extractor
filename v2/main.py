@@ -23,7 +23,8 @@ def main():
     )
 
     # input_type = input("Enter input type: ")
-    input_type = "youtube"
+    # input_type = "youtube"
+    input_type = "segments"
     # input_type = "playlist"
     # input_type = "local"
     # input_type = "object"

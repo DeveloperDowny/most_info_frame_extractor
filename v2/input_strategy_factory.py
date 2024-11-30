@@ -3,6 +3,9 @@ from input_strategy import InputStrategy
 from local_video_input_strategy import LocalVideoInputStrategy
 from python_object_input_strategy import PythonObjectInputStrategy
 from playlist_input_strategy import PlaylistInputStrategy
+from segments_input_strategy import SegmentsInputStrategy
+
+from helper import Helper
 
 
 class InputStrategyFactory:
@@ -51,6 +54,13 @@ class InputStrategyFactory:
                 ocr_strategy,
                 extraction_strategy,
                 ocr_approval_strategy,
+            )
+        elif input_type == "segments":
+            directory = input("Enter directory path: ")
+            segments = Helper.get_segments(directory)
+            segments = [int(x) for x in segments.split(",")]
+            return SegmentsInputStrategy(
+                segments, directory, ocr_strategy, extraction_strategy, ocr_approval_strategy
             )
         else:
             raise ValueError("Invalid input type")

@@ -180,6 +180,9 @@ class Helper:
         cv2.destroyAllWindows()
         return frame_rate
 
+    @staticmethod
+    def get_segments(directory):
+        return "0, 125, 198, 260, 344"
 
 if __name__ == "__main__":
     print(Helper.get_digits("frame_234.jpg"))

@@ -9,4 +9,4 @@ pytubefix
 pandas
 numpy
 scipy
-matplotlib
+google-cloud-storage

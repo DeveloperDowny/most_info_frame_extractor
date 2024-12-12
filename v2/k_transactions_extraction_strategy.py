@@ -99,7 +99,7 @@ class KTransactionsExtractionStrategy(ExtractionStrategy):
                 if should_auto_calculate_or_k == "auto":
                     peaks, _ = self.calculate_peaks(x, y)
                     # Set k as the number of detected peaks
-                    self.k = len(peaks)
+                    self.k = len(peaks) + 5
                     print(f"Detected {self.k} significant transitions in the signal")
                 else:
                     self.k = int(should_auto_calculate_or_k)

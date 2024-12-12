@@ -3,18 +3,30 @@ from input_strategy import InputStrategy
 from local_video_input_strategy import LocalVideoInputStrategy
 from python_object_input_strategy import PythonObjectInputStrategy
 from playlist_input_strategy import PlaylistInputStrategy
+from input_data.input_data import InputData
 
 
 class InputStrategyFactory:
 
     @staticmethod
     def create_input_strategy(
-        input_type, ocr_strategy, extraction_strategy, ocr_approval_strategy
+        input_type,
+        ocr_strategy,
+        extraction_strategy,
+        ocr_approval_strategy,
+        input_data: InputData = None,
     ) -> InputStrategy:
         if input_type == "youtube":
-            video_url = input("Enter YouTube video URL: ")
+            if input_data == None:
+                input_data = InputData()
+                video_url = input("Enter YouTube video URL: ")
+                input_data.video_url = video_url
+
             return YouTubeVideoURLInputStrategy(
-                video_url, ocr_strategy, extraction_strategy, ocr_approval_strategy
+                input_data.video_url,
+                ocr_strategy,
+                extraction_strategy,
+                ocr_approval_strategy,
             )
         elif input_type == "local":
             directory = input("Enter directory path: ")

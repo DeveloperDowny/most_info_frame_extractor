@@ -18,9 +18,43 @@ import base64
 from flask import Flask, request
 
 
+from input_strategy_factory import InputStrategyFactory
+from ocr_strategy_factory import OCRStrategyFactory
+from extraction_strategy_factory import ExtractionStrategyFactory
+from input_strategy import InputStrategy
+from ocr_approval.ocr_approval_strategy_factory import OCRApprovalStrategyFactory
+
+from input_data.input_data import InputData
+
+
 app = Flask(__name__)
 
 # [END cloudrun_pubsub_server]
+
+
+def main(video_url):
+    ocr_approval_type = "pixel_comparison"
+
+    ocr_approval_strategy = OCRApprovalStrategyFactory.create_strategy(
+        ocr_approval_type
+    )
+
+    ocr_type = "tesseract"
+    ocr_strategy = OCRStrategyFactory.create_ocr_strategy(ocr_type)
+
+    extraction_type = "k_transactions"
+    extraction_strategy = ExtractionStrategyFactory.create_extraction_strategy(
+        extraction_type
+    )
+
+    input_type = "youtube"
+    input_data = InputData()
+    input_data.video_url = video_url
+    input_strategy: InputStrategy = InputStrategyFactory.create_input_strategy(
+        input_type, ocr_strategy, extraction_strategy, ocr_approval_strategy, input_data
+    )
+
+    input_strategy.proceed()
 
 
 # [START cloudrun_pubsub_handler]
@@ -44,9 +78,17 @@ def index():
     if isinstance(pubsub_message, dict) and "data" in pubsub_message:
         name = base64.b64decode(pubsub_message["data"]).decode("utf-8").strip()
 
-    print(f"Hello {name}!")
+    print(f"New v1 Hello {name}!")
+
+    main(name)
 
     return ("", 204)
+ 
 
+@app.route('/data')
+def data(): 
+    url = request.args.get('url')
+    main(url)
+    return ("", 204)
 
 # [END cloudrun_pubsub_handler]

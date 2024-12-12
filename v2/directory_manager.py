@@ -5,6 +5,9 @@ import shutil
 class DirectoryManager:
     @staticmethod
     def create_directory(directory_name: str):
+        # if exists, skip
+        if os.path.exists(directory_name):
+            return
         os.mkdir(directory_name)
 
     @staticmethod

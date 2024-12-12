@@ -30,6 +30,9 @@ class YouTubeVideoURLInputStrategy(InputStrategy):
         self.ocr_approval_strategy = ocr_approval_strategy
 
     def proceed(self):
+        # create base directory 
+        DirectoryManager.create_directory(BASE_DIR)
+
         directory = RandomGenerator.generate_random_word(6)
         directory = os.path.join(BASE_DIR, directory)
         DirectoryManager.create_directory(directory)

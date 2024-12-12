@@ -1,9 +1,7 @@
 # [START cloudrun_pubsub_server]
-import base64
 
 from flask import Flask, request
 
-from telegram import Bot
 
 app = Flask(__name__)
 
@@ -30,19 +28,6 @@ def data():
     data = request.get_json()
     handle_message(data["message"])
     print(data)
-    return ("", 204)
-
-
-# {"chat_id":"<chat_id>","text":"<text>", "pdf_url":"<pdf_url>"}
-@app.route("/deliver", methods=["POST"])
-def delivery():
-    data = request.get_json()
-    chat_id = data["chat_id"]
-    text = data["text"]
-    pdf_url = data["pdf_url"]
-    bot = Bot(token="7770881506:AAGKMR-kF-uw2yVqz8cZurdxT3-Tj52caeg")
-    bot.send_message(chat_id=chat_id, text=text)
-    bot.send_video(chat_id=chat_id, video=pdf_url)
     return ("", 204)
 
 

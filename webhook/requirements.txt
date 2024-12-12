@@ -1,4 +1,3 @@
 Flask
 gunicorn
-Werkzeug
-python-telegram-bot
+Werkzeug 

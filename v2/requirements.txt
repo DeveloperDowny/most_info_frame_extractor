@@ -10,3 +10,4 @@ pandas
 numpy
 scipy
 google-cloud-storage
+google-cloud-pubsub

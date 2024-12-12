@@ -12,6 +12,7 @@ from post_processor import PostProcessor
 from constants import BASE_DIR
 
 from key_moments_extraction_strategy import KeyMomentsExtractionStrategy
+from k_transactions_extraction_strategy import KTransactionsExtractionStrategy
 
 from ocr_approval.ocr_approval_strategy import OCRApprovalStrategy
 
@@ -70,6 +71,14 @@ class YouTubeVideoURLInputStrategy(InputStrategy):
         if isinstance(self.extraction_strategy, KeyMomentsExtractionStrategy):
             self.extraction_strategy.video_url = self.video_url
             self.extraction_strategy.frame_rate = Helper.get_frame_rate(video_path)
+
+        # TODO: Ideally, this should not be here. Check if there is a better way to do this.
+        if isinstance(self.extraction_strategy, KTransactionsExtractionStrategy):
+            # TODO: This is a hack. Fix this.
+            self.extraction_strategy.auto_calculate_k = False 
+            video_duration = Helper.get_video_duration(self.video_url)
+            number_of_slides = Helper.get_number_of_slides(video_duration)
+            self.extraction_strategy.k = number_of_slides
 
         extracted_frames = self.extraction_strategy.extract_frames(processed_frames)
 

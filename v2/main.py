@@ -27,13 +27,21 @@ from ocr_approval.ocr_approval_strategy_factory import OCRApprovalStrategyFactor
 from input_data.input_data import InputData
 from storage.storage_strategy_factory import StorageStrategyFactory
 
+import json
+
+from concurrent import futures
+from google.cloud import pubsub_v1
+from typing import Callable
+
+from helper import Helper
+
 
 app = Flask(__name__)
 
 # [END cloudrun_pubsub_server]
 
 
-def main(video_url):
+def handle_video_url(video_url):
     ocr_approval_type = "pixel_comparison"
 
     ocr_approval_strategy = OCRApprovalStrategyFactory.create_strategy(
@@ -79,11 +87,6 @@ def find_input_type(name):
 
 def handle_playlist(playlist_url):
     """Publishes multiple messages to a Pub/Sub topic with an error handler."""
-    from concurrent import futures
-    from google.cloud import pubsub_v1
-    from typing import Callable
-
-    from helper import Helper
 
     project_id = "mproj-404317"
     topic_id = "myRunTopic"
@@ -136,28 +139,26 @@ def index():
 
     pubsub_message = envelope["message"]
 
-    name = "World"
+    data = "World"
+    chat_id = None
+    video_url = None
     if isinstance(pubsub_message, dict) and "data" in pubsub_message:
-        name = base64.b64decode(pubsub_message["data"]).decode("utf-8").strip()
+        data = base64.b64decode(pubsub_message["data"]).decode("utf-8").strip()
+        json_data = json.loads(data)
+        video_url = json_data["video_url"]
+        chat_id = json_data["chat_id"]
 
-    input_type = find_input_type(name)
+    input_type = find_input_type(video_url)
 
     if input_type == "playlist":
-        print(f"New Playlist v3 Hello {name}!")
-        handle_playlist(name)
+        print(f"New Playlist v3 Hello {data}!")
+        handle_playlist(video_url)
         return ("", 204)
 
-    print(f"New v2 Hello {name}!")
+    print(f"New v2 Hello {data}!")
 
-    main(name)
+    handle_video_url(video_url)
 
-    return ("", 204)
-
-
-@app.route("/data")
-def data():
-    url = request.args.get("url")
-    main(url)
     return ("", 204)
 
 

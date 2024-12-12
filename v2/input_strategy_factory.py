@@ -15,6 +15,7 @@ class InputStrategyFactory:
         extraction_strategy,
         ocr_approval_strategy,
         input_data: InputData = None,
+        storage_strategy = None,
     ) -> InputStrategy:
         if input_type == "youtube":
             if input_data == None:
@@ -27,6 +28,7 @@ class InputStrategyFactory:
                 ocr_strategy,
                 extraction_strategy,
                 ocr_approval_strategy,
+                storage_strategy
             )
         elif input_type == "local":
             directory = input("Enter directory path: ")

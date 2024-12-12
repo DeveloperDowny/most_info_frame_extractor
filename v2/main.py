@@ -25,6 +25,7 @@ from input_strategy import InputStrategy
 from ocr_approval.ocr_approval_strategy_factory import OCRApprovalStrategyFactory
 
 from input_data.input_data import InputData
+from storage.storage_strategy_factory import StorageStrategyFactory
 
 
 app = Flask(__name__)
@@ -50,8 +51,20 @@ def main(video_url):
     input_type = "youtube"
     input_data = InputData()
     input_data.video_url = video_url
+
+    storage_type = "gcp"
+    bucket_name = "extracted-pdfs"
+    storage_strategy = StorageStrategyFactory.create_storage_strategy(
+        storage_type, bucket_name
+    )
+
     input_strategy: InputStrategy = InputStrategyFactory.create_input_strategy(
-        input_type, ocr_strategy, extraction_strategy, ocr_approval_strategy, input_data
+        input_type,
+        ocr_strategy,
+        extraction_strategy,
+        ocr_approval_strategy,
+        input_data,
+        storage_strategy,
     )
 
     input_strategy.proceed()
@@ -78,17 +91,18 @@ def index():
     if isinstance(pubsub_message, dict) and "data" in pubsub_message:
         name = base64.b64decode(pubsub_message["data"]).decode("utf-8").strip()
 
-    print(f"New v1 Hello {name}!")
+    print(f"New v2 Hello {name}!")
 
     main(name)
 
     return ("", 204)
- 
 
-@app.route('/data')
-def data(): 
-    url = request.args.get('url')
+
+@app.route("/data")
+def data():
+    url = request.args.get("url")
     main(url)
     return ("", 204)
+
 
 # [END cloudrun_pubsub_handler]

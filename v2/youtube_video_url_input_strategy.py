@@ -15,6 +15,7 @@ from key_moments_extraction_strategy import KeyMomentsExtractionStrategy
 from k_transactions_extraction_strategy import KTransactionsExtractionStrategy
 
 from ocr_approval.ocr_approval_strategy import OCRApprovalStrategy
+from storage.storage_strategy import StorageStrategy
 
 
 class YouTubeVideoURLInputStrategy(InputStrategy):
@@ -24,14 +25,16 @@ class YouTubeVideoURLInputStrategy(InputStrategy):
         ocr_strategy: OCRStrategy,
         extraction_strategy: ExtractionStrategy,
         ocr_approval_strategy: OCRApprovalStrategy,
+        storage_strategy: StorageStrategy,
     ):
         self.video_url = video_url
         self.ocr_strategy = ocr_strategy
         self.extraction_strategy = extraction_strategy
         self.ocr_approval_strategy = ocr_approval_strategy
+        self.storage_strategy = storage_strategy
 
     def proceed(self):
-        # create base directory 
+        # create base directory
         DirectoryManager.create_directory(BASE_DIR)
 
         directory = RandomGenerator.generate_random_word(6)
@@ -46,7 +49,9 @@ class YouTubeVideoURLInputStrategy(InputStrategy):
 
         Helper.index_results(directory, video_path)
 
-        processed_frames = ProcessedFrame.from_video(video_path, self.ocr_strategy, self.ocr_approval_strategy)
+        processed_frames = ProcessedFrame.from_video(
+            video_path, self.ocr_strategy, self.ocr_approval_strategy
+        )
 
         Helper.save_objects(video_path, processed_frames, directory)
 
@@ -75,7 +80,7 @@ class YouTubeVideoURLInputStrategy(InputStrategy):
         # TODO: Ideally, this should not be here. Check if there is a better way to do this.
         if isinstance(self.extraction_strategy, KTransactionsExtractionStrategy):
             # TODO: This is a hack. Fix this.
-            self.extraction_strategy.auto_calculate_k = False 
+            self.extraction_strategy.auto_calculate_k = False
             video_duration = Helper.get_video_duration(self.video_url)
             number_of_slides = Helper.get_number_of_slides(video_duration)
             self.extraction_strategy.k = number_of_slides
@@ -113,3 +118,9 @@ class YouTubeVideoURLInputStrategy(InputStrategy):
         )
 
         Helper.save_log(video_path, output_pdf_path)
+
+        pdf_url = self.storage_strategy.upload_file(
+            output_pdf_path, os.path.basename(output_pdf_path)
+        )
+
+        Helper.log(f"Uploaded PDF to {pdf_url}")

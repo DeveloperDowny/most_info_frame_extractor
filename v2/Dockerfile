@@ -26,6 +26,14 @@ ENV PYTHONUNBUFFERED True
 # Copying this separately prevents re-running pip install on every code change.
 COPY requirements.txt ./
 
+# Install system dependencies for Tesseract OCR and OpenCV
+RUN apt-get update && apt-get install -y \
+    tesseract-ocr \
+    libtesseract-dev \
+    libgl1-mesa-glx \
+    libglib2.0-0 \
+    && rm -rf /var/lib/apt/lists/*
+
 # Install production dependencies.
 RUN pip install -r requirements.txt
 

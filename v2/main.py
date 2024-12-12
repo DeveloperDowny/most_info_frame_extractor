@@ -13,8 +13,8 @@ def main():
     )
 
     # ocr_type = input("Enter OCR type: ")
-    # ocr_type = "tesseract"
-    ocr_type = "easy"
+    ocr_type = "tesseract"
+    # ocr_type = "easy"
     ocr_strategy = OCRStrategyFactory.create_ocr_strategy(ocr_type)
 
     extraction_type = "k_transactions"

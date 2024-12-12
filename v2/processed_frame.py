@@ -5,6 +5,9 @@ from video_processor import VideoProcessor
 from directory_manager import DirectoryManager
 from ocr_approval.ocr_approval_strategy import OCRApprovalStrategy
 
+from concurrent.futures import ThreadPoolExecutor
+
+
 
 class ProcessedFrame:
     def __init__(self):
@@ -70,3 +73,33 @@ class ProcessedFrame:
 #         processed_frames = ProcessedFrame.from_youtube_video(
 #             video_url, ocr_strategy, video_processor
 #         )
+
+
+    @staticmethod
+    def from_video_parallel(video_path, ocr_strategy, ocr_approval_strategy, num_replicas=4):
+        all_frames = list(VideoProcessor.get_frames(video_path, interval=3))  # Get all frames
+        chunk_size = len(all_frames) // num_replicas
+        chunks = [all_frames[i * chunk_size: (i + 1) * chunk_size] for i in range(num_replicas)]
+
+        def process_chunk(chunk):
+            processed_frames = []
+            old_frame = None
+            for frame in chunk:
+                if not ocr_approval_strategy.permit_ocr(frame.frame, old_frame):
+                    processed_frame = ProcessedFrame()
+                    processed_frame.frame_number = frame.frame_number
+                    processed_frame.ocr_text = processed_frames[-1].ocr_text if processed_frames else ""
+                    processed_frames.append(processed_frame)
+                    continue
+                old_frame = frame.frame
+                processed_frame = ProcessedFrame()
+                processed_frame.frame_number = frame.frame_number
+                processed_frame.ocr_text = ocr_strategy.extract_clean_text(frame.frame)
+                processed_frames.append(processed_frame)
+            return processed_frames
+
+        with ThreadPoolExecutor(max_workers=num_replicas) as executor:
+            results = list(executor.map(process_chunk, chunks))
+
+        # Flatten list of lists
+        return [frame for sublist in results for frame in sublist]

@@ -38,7 +38,7 @@ class LocalVideoInputStrategy(InputStrategy):
 
         Helper.index_results(new_directory, video_path)
 
-        processed_frames = ProcessedFrame.from_video(
+        processed_frames = ProcessedFrame.from_video_parallel(
             video_path, self.ocr_strategy, self.ocr_approval_strategy
         )
 

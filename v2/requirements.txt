@@ -1,0 +1,7 @@
+flask
+google-cloud-pubsub
+opencv-python
+pytesseract
+easyocr
+matplotlib
+pytubefix

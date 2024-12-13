@@ -1,5 +1,15 @@
-# requirements.txt
+# Core Web Framework
 fastapi==0.109.0
+uvicorn==0.27.0
 hypercorn==0.16.0
+
+# Telegram and Async Libraries
+pyrogram==2.0.106
+tgcrypto==1.2.5
+aiohttp==3.9.3
+
+# Type Validation
+pydantic==2.6.4
+
+# Optional performance improvements
 uvloop==0.19.0
-asyncio==3.4.3

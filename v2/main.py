@@ -61,7 +61,8 @@ def handle_video_url(video_url):
     input_data.video_url = video_url
 
     storage_type = "gcp"
-    bucket_name = "extracted-pdfs"
+    # bucket_name = "extracted-pdfs" # spit acc
+    bucket_name = "extracted_pdfs_v2" # vsp acc
     storage_strategy = StorageStrategyFactory.create_storage_strategy(
         storage_type, bucket_name
     )

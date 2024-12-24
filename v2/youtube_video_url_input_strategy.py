@@ -2,7 +2,7 @@ from input_strategy import InputStrategy
 from processed_frame import ProcessedFrame
 from ocr_strategy import OCRStrategy
 from extraction_strategy import ExtractionStrategy
-from data_plotter import DataPlotter
+# from data_plotter import DataPlotter
 from random_generator import RandomGenerator
 from directory_manager import DirectoryManager
 import os
@@ -63,14 +63,14 @@ class YouTubeVideoURLInputStrategy(InputStrategy):
         DirectoryManager.create_directory(plot_directory)
         plot_output_path = os.path.join(plot_directory, "plot.png")
 
-        DataPlotter.plot_data(
-            x_data,
-            y_data,
-            "Frame Number",
-            "Number of Characters",
-            "Number of Characters in OCR Text",
-            plot_output_path,
-        )
+        # DataPlotter.plot_data(
+        #     x_data,
+        #     y_data,
+        #     "Frame Number",
+        #     "Number of Characters",
+        #     "Number of Characters in OCR Text",
+        #     plot_output_path,
+        # )
 
         # TODO: Ideally, this should not be here. Check if there is a better way to do this.
         if isinstance(self.extraction_strategy, KeyMomentsExtractionStrategy):
@@ -87,15 +87,15 @@ class YouTubeVideoURLInputStrategy(InputStrategy):
 
         extracted_frames = self.extraction_strategy.extract_frames(processed_frames)
 
-        DataPlotter.plot_data(
-            x_data,
-            y_data,
-            "Frame Number",
-            "Number of Characters",
-            "Number of Characters in OCR Text",
-            plot_output_path,
-            extracted_frames=extracted_frames,
-        )
+        # DataPlotter.plot_data(
+        #     x_data,
+        #     y_data,
+        #     "Frame Number",
+        #     "Number of Characters",
+        #     "Number of Characters in OCR Text",
+        #     plot_output_path,
+        #     extracted_frames=extracted_frames,
+        # )
 
         extracted_frames_directory = directory + "_extracted_frames"
         DirectoryManager.create_directory(extracted_frames_directory)

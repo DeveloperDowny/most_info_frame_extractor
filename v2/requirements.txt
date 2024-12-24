@@ -4,7 +4,7 @@ Werkzeug
 opencv-python
 pytesseract
 # easyocr
-matplotlib
+# matplotlib
 pytubefix
 pandas
 numpy

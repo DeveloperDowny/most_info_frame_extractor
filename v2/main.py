@@ -1,18 +1,3 @@
-# Copyright 2019 Google, LLC.
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#    http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-
-# [START cloudrun_pubsub_server]
 import base64
 
 from flask import Flask, request
@@ -36,14 +21,14 @@ from typing import Callable
 from helper import Helper
 
 from gcp_config import GCPConfig
+from delivery.delivery_strategy_factory import DeliveryStrategyFactory
 
 
 app = Flask(__name__)
 
-# [END cloudrun_pubsub_server]
 
 
-def handle_video_url(video_url):
+def handle_video_url(video_url, chat_id):
     ocr_approval_type = "pixel_comparison"
 
     ocr_approval_strategy = OCRApprovalStrategyFactory.create_strategy(
@@ -67,6 +52,11 @@ def handle_video_url(video_url):
         storage_type, GCPConfig.BUCKET_NAME
     )
 
+    delivery_type = "telegram"
+    delivery_strategy = DeliveryStrategyFactory.create_delivery_strategy(
+        delivery_type, chat_id
+    )
+
     input_strategy: InputStrategy = InputStrategyFactory.create_input_strategy(
         input_type,
         ocr_strategy,
@@ -74,6 +64,7 @@ def handle_video_url(video_url):
         ocr_approval_strategy,
         input_data,
         storage_strategy,
+        delivery_strategy,
     )
 
     input_strategy.proceed()
@@ -86,7 +77,7 @@ def find_input_type(name):
         return "youtube"
 
 
-def handle_playlist(playlist_url):
+def handle_playlist(playlist_url, chat_id):
     """Publishes multiple messages to a Pub/Sub topic with an error handler."""
 
     publisher = pubsub_v1.PublisherClient()
@@ -107,7 +98,11 @@ def handle_playlist(playlist_url):
 
     video_urls = Helper.get_video_urls_from_playlist(playlist_url)
     for video_url in video_urls:
-        data = video_url
+        json_data = {
+            "video_url": video_url,
+            "chat_id": chat_id,
+        }
+        data = json.dumps(json_data)
         # When you publish a message, the client returns a future.
         publish_future = publisher.publish(topic_path, data.encode("utf-8"))
         # Non-blocking. Publish failures are handled in the callback function.
@@ -152,15 +147,14 @@ def index():
 
         if input_type == "playlist":
             Helper.log(f"Handling playlist: {video_url}")
-            handle_playlist(video_url)
+            handle_playlist(video_url, chat_id)
             return ("", 204)
 
         Helper.log(f"Handling video: {video_url}")
-        handle_video_url(video_url)
+        handle_video_url(video_url, chat_id)
     except Exception as e:
         print(f"error: {e}")
     finally:
         return ("", 204)
-
 
 # [END cloudrun_pubsub_handler]

@@ -163,7 +163,7 @@ class Helper:
 
     @staticmethod
     def get_video_name(video_path):
-        video_name = os.path.basename(video_path)
+        video_name = os.path.basename(video_path)[:-4]
         return video_name
 
     @staticmethod

@@ -16,6 +16,7 @@ from k_transactions_extraction_strategy import KTransactionsExtractionStrategy
 
 from ocr_approval.ocr_approval_strategy import OCRApprovalStrategy
 from storage.storage_strategy import StorageStrategy
+from delivery.delivery_strategy import DeliveryStrategy
 
 
 class YouTubeVideoURLInputStrategy(InputStrategy):
@@ -26,12 +27,14 @@ class YouTubeVideoURLInputStrategy(InputStrategy):
         extraction_strategy: ExtractionStrategy,
         ocr_approval_strategy: OCRApprovalStrategy,
         storage_strategy: StorageStrategy,
+        delivery_strategy: DeliveryStrategy,
     ):
         self.video_url = video_url
         self.ocr_strategy = ocr_strategy
         self.extraction_strategy = extraction_strategy
         self.ocr_approval_strategy = ocr_approval_strategy
         self.storage_strategy = storage_strategy
+        self.delivery_strategy = delivery_strategy
 
     def proceed(self):
         # create base directory
@@ -119,8 +122,13 @@ class YouTubeVideoURLInputStrategy(InputStrategy):
 
         Helper.save_log(video_path, output_pdf_path)
 
-        pdf_url = self.storage_strategy.upload_file(
-            output_pdf_path, os.path.basename(output_pdf_path)
-        )
+        video_name = Helper.get_video_name(video_path)
+
+        file_name = video_name + "-" + os.path.basename(output_pdf_path)
+
+        pdf_url = self.storage_strategy.upload_file(output_pdf_path, file_name)
 
         Helper.log(f"Uploaded PDF to {pdf_url}")
+
+        caption = f"Here's the PDF notes of the video: \n\n{video_name}\n\nThank you for trying Glimpsify!\nSee you soon!"
+        self.delivery_strategy.deliver(pdf_url, caption)

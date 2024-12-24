@@ -6,6 +6,8 @@ from input_strategy import InputStrategy
 # from playlist_input_strategy import PlaylistInputStrategy
 from input_data.input_data import InputData
 
+from delivery.delivery_strategy import DeliveryStrategy
+
 
 class InputStrategyFactory:
 
@@ -17,6 +19,7 @@ class InputStrategyFactory:
         ocr_approval_strategy,
         input_data: InputData = None,
         storage_strategy=None,
+        delivery_strategy=None,
     ) -> InputStrategy:
         if input_type == "youtube":
             if input_data == None:
@@ -30,6 +33,7 @@ class InputStrategyFactory:
                 extraction_strategy,
                 ocr_approval_strategy,
                 storage_strategy,
+                delivery_strategy,
             )
         # elif input_type == "local":
         #     directory = input("Enter directory path: ")

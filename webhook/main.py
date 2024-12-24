@@ -1,6 +1,7 @@
 # [START cloudrun_pubsub_server]
 
 from flask import Flask, request
+from gcp_config import GCPConfig
 
 import json
 
@@ -16,12 +17,8 @@ def handle_video_url(video_url, chat_id):
     from google.cloud import pubsub_v1
     from typing import Callable
 
-    project_id = "mproj-404317"
-    # topic_id = "myRunTopic"
-    topic_id = "pdf-extractor-tasks"
-
     publisher = pubsub_v1.PublisherClient()
-    topic_path = publisher.topic_path(project_id, topic_id)
+    topic_path = publisher.topic_path(GCPConfig.PROJECT_ID, GCPConfig.TOPIC_ID)
     publish_futures = []
 
     def get_callback(

@@ -6,6 +6,8 @@ from typing import Callable
 
 import json
 
+from gcp_config import GCPConfig
+
 
 class TelegramDeliveryStrategy(DeliveryStrategy):
     def __init__(self, chat_id: int):
@@ -14,11 +16,8 @@ class TelegramDeliveryStrategy(DeliveryStrategy):
     def deliver(self, pdf_url: str, caption: str) -> None:
         """Publishes multiple messages to a Pub/Sub topic with an error handler."""
 
-        project_id = "mproj-404317"
-        topic_id = "PDFCreation"
-
         publisher = pubsub_v1.PublisherClient()
-        topic_path = publisher.topic_path(project_id, topic_id)
+        topic_path = publisher.topic_path(GCPConfig.PROJECT_ID, GCPConfig.PDF_CREATION_TOPIC_ID)
         publish_futures = []
 
         def get_callback(

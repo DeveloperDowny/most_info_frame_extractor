@@ -35,6 +35,8 @@ from typing import Callable
 
 from helper import Helper
 
+from gcp_config import GCPConfig
+
 
 app = Flask(__name__)
 
@@ -87,15 +89,10 @@ def find_input_type(name):
 
 
 def handle_playlist(playlist_url):
-    """Publishes multiple messages to a Pub/Sub topic with an error handler."""
-
-    # project_id = "mproj-404317"
-    # topic_id = "myRunTopic"
-    project_id = "glimpsify-445707"
-    topic_id = "pdf-extractor-tasks"
+    """Publishes multiple messages to a Pub/Sub topic with an error handler.""" 
 
     publisher = pubsub_v1.PublisherClient()
-    topic_path = publisher.topic_path(project_id, topic_id)
+    topic_path = publisher.topic_path(GCPConfig.PROJECT_ID, GCPConfig.TOPIC_ID)
     publish_futures = []
 
     def get_callback(

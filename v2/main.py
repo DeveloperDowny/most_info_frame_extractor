@@ -62,7 +62,7 @@ def handle_video_url(video_url):
 
     storage_type = "gcp"
     # bucket_name = "extracted-pdfs" # spit acc
-    bucket_name = "extracted_pdfs_v2" # vsp acc
+    bucket_name = "extracted_pdfs_v2"  # vsp acc
     storage_strategy = StorageStrategyFactory.create_storage_strategy(
         storage_type, bucket_name
     )
@@ -89,8 +89,10 @@ def find_input_type(name):
 def handle_playlist(playlist_url):
     """Publishes multiple messages to a Pub/Sub topic with an error handler."""
 
-    project_id = "mproj-404317"
-    topic_id = "myRunTopic"
+    # project_id = "mproj-404317"
+    # topic_id = "myRunTopic"
+    project_id = "glimpsify-445707"
+    topic_id = "pdf-extractor-tasks"
 
     publisher = pubsub_v1.PublisherClient()
     topic_path = publisher.topic_path(project_id, topic_id)

@@ -17,7 +17,8 @@ def handle_video_url(video_url, chat_id):
     from typing import Callable
 
     project_id = "mproj-404317"
-    topic_id = "myRunTopic"
+    # topic_id = "myRunTopic"
+    topic_id = "pdf-extractor-tasks"
 
     publisher = pubsub_v1.PublisherClient()
     topic_path = publisher.topic_path(project_id, topic_id)

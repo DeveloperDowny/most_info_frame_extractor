@@ -63,10 +63,8 @@ def handle_video_url(video_url):
     input_data.video_url = video_url
 
     storage_type = "gcp"
-    # bucket_name = "extracted-pdfs" # spit acc
-    bucket_name = "extracted_pdfs_v2"  # vsp acc
     storage_strategy = StorageStrategyFactory.create_storage_strategy(
-        storage_type, bucket_name
+        storage_type, GCPConfig.BUCKET_NAME
     )
 
     input_strategy: InputStrategy = InputStrategyFactory.create_input_strategy(
@@ -89,7 +87,7 @@ def find_input_type(name):
 
 
 def handle_playlist(playlist_url):
-    """Publishes multiple messages to a Pub/Sub topic with an error handler.""" 
+    """Publishes multiple messages to a Pub/Sub topic with an error handler."""
 
     publisher = pubsub_v1.PublisherClient()
     topic_path = publisher.topic_path(GCPConfig.PROJECT_ID, GCPConfig.TOPIC_ID)
@@ -126,40 +124,43 @@ def handle_playlist(playlist_url):
 @app.route("/", methods=["POST"])
 def index():
     """Receive and parse Pub/Sub messages."""
-    envelope = request.get_json()
-    if not envelope:
-        msg = "no Pub/Sub message received"
-        print(f"error: {msg}")
-        return f"Bad Request: {msg}", 400
+    try:
+        envelope = request.get_json()
+        if not envelope:
+            msg = "no Pub/Sub message received"
+            print(f"error: {msg}")
+            return f"Bad Request: {msg}", 400
 
-    if not isinstance(envelope, dict) or "message" not in envelope:
-        msg = "invalid Pub/Sub message format"
-        print(f"error: {msg}")
-        return f"Bad Request: {msg}", 400
+        if not isinstance(envelope, dict) or "message" not in envelope:
+            msg = "invalid Pub/Sub message format"
+            print(f"error: {msg}")
+            return f"Bad Request: {msg}", 400
 
-    pubsub_message = envelope["message"]
+        pubsub_message = envelope["message"]
 
-    data = "World"
-    chat_id = None
-    video_url = None
-    if isinstance(pubsub_message, dict) and "data" in pubsub_message:
-        data = base64.b64decode(pubsub_message["data"]).decode("utf-8").strip()
-        json_data = json.loads(data)
-        video_url = json_data["video_url"]
-        chat_id = json_data["chat_id"]
+        data = "World"
+        chat_id = None
+        video_url = None
+        if isinstance(pubsub_message, dict) and "data" in pubsub_message:
+            data = base64.b64decode(pubsub_message["data"]).decode("utf-8").strip()
+            Helper.log(f"Received Data: {data}")
+            json_data = json.loads(data)
+            video_url = json_data["video_url"]
+            chat_id = json_data["chat_id"]
 
-    input_type = find_input_type(video_url)
+        input_type = find_input_type(video_url)
 
-    if input_type == "playlist":
-        print(f"New Playlist v3 Hello {data}!")
-        handle_playlist(video_url)
+        if input_type == "playlist":
+            Helper.log(f"Handling playlist: {video_url}")
+            handle_playlist(video_url)
+            return ("", 204)
+
+        Helper.log(f"Handling video: {video_url}")
+        handle_video_url(video_url)
+    except Exception as e:
+        print(f"error: {e}")
+    finally:
         return ("", 204)
-
-    print(f"New v2 Hello {data}!")
-
-    handle_video_url(video_url)
-
-    return ("", 204)
 
 
 # [END cloudrun_pubsub_handler]

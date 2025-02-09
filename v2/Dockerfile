@@ -32,6 +32,7 @@ RUN apt-get update && apt-get install -y \
     libtesseract-dev \
     libgl1-mesa-glx \
     libglib2.0-0 \
+    nodejs \ 
     && rm -rf /var/lib/apt/lists/*
 
 # Install production dependencies.

@@ -11,7 +11,7 @@ def download_youtube_video(url: str, output_dir: str = ".") -> None:
         url (str): The URL of the YouTube video.
         output_dir (str, optional): The directory to save the downloaded video. Defaults to the current directory.
     """
-    yt = YouTube(url)
+    yt = YouTube(url, 'WEB')
 
     video = get_highest_resolution_mp4_stream(yt)
 

@@ -1,31 +1,27 @@
-import base64
-
-from flask import Flask, request
-
-
-from input_strategy_factory import InputStrategyFactory
-from ocr_strategy_factory import OCRStrategyFactory
-from extraction_strategy_factory import ExtractionStrategyFactory
-from input_strategy import InputStrategy
-from ocr_approval.ocr_approval_strategy_factory import OCRApprovalStrategyFactory
-
-from input_data.input_data import InputData
-from storage.storage_strategy_factory import StorageStrategyFactory
-
-import json
-
 from concurrent import futures
+from flask import Flask, request
 from google.cloud import pubsub_v1
 from typing import Callable
+import base64
+import json
+
+# Importing Factories
+from delivery.delivery_strategy_factory import DeliveryStrategyFactory
+from extraction_strategy_factory import ExtractionStrategyFactory
+from ocr_approval.ocr_approval_strategy_factory import OCRApprovalStrategyFactory
+from input_strategy_factory import InputStrategyFactory
+from ocr_strategy_factory import OCRStrategyFactory
+from storage.storage_strategy_factory import StorageStrategyFactory
+
+# Importing Configs
+from gcp_config import GCPConfig
+from global_config import GlobalConfig
+
 
 from helper import Helper
-
-from gcp_config import GCPConfig
-from delivery.delivery_strategy_factory import DeliveryStrategyFactory
-
+from input_data.input_data import InputData
 
 app = Flask(__name__)
-
 
 
 def handle_video_url(video_url, chat_id):
@@ -43,21 +39,25 @@ def handle_video_url(video_url, chat_id):
         extraction_type
     )
 
-    input_type = "youtube"
+    input_type = "youtube"  # TODO: These things should be enums
     input_data = InputData()
     input_data.video_url = video_url
 
     storage_type = "gcp"
+    if GlobalConfig.DEBUG:
+        storage_type = "dummy"
     storage_strategy = StorageStrategyFactory.create_storage_strategy(
         storage_type, GCPConfig.BUCKET_NAME
     )
 
     delivery_type = "telegram"
+    if GlobalConfig.DEBUG:
+        delivery_type = "dummy"
     delivery_strategy = DeliveryStrategyFactory.create_delivery_strategy(
         delivery_type, chat_id
     )
 
-    input_strategy: InputStrategy = InputStrategyFactory.create_input_strategy(
+    input_strategy = InputStrategyFactory.create_input_strategy(
         input_type,
         ocr_strategy,
         extraction_strategy,
@@ -153,8 +153,9 @@ def index():
         Helper.log(f"Handling video: {video_url}")
         handle_video_url(video_url, chat_id)
     except Exception as e:
-        print(f"error: {e}")
+        print(f"Error in handle_video_url: {e}")
     finally:
         return ("", 204)
+
 
 # [END cloudrun_pubsub_handler]

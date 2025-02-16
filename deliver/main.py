@@ -29,19 +29,19 @@ class TelegramConfig:
 # Request model for PDF delivery
 class PDFDeliveryRequest(BaseModel):
     pdf_url: HttpUrl
-    chat_id: str
+    chat_id: int
     caption: Optional[str] = None
 
 
 async def send_pdf_to_telegram(
-    client: Client, chat_id: str, pdf_url: str, caption: Optional[str] = None
+    client: Client, chat_id: int, pdf_url: str, caption: Optional[str] = None
 ) -> bool:
     """
     Send PDF to Telegram user directly from GCS URL.
 
     Args:
         client (Client): Pyrogram Telegram client
-        chat_id (str): Telegram chat ID
+        chat_id (int): Telegram chat ID
         pdf_url (str): URL of the PDF (supports GCS URLs)
         caption (Optional[str]): Optional caption for the document
 
@@ -63,26 +63,44 @@ async def send_pdf_to_telegram(
         return False
 
 
+from fastapi import Request
+import base64
+import json
+
+
+# [START cloudrun_pdf_delivery]
 @app.post("/deliver-pdf/")
-async def deliver_pdf(request: PDFDeliveryRequest):
-    """
-    Endpoint to deliver PDF to a Telegram user.
+async def index(request: Request):
+    """Receive and parse Pub/Sub messages."""
+    envelope = await request.json()
+    if not envelope:
+        msg = "no Pub/Sub message received"
+        print(f"error: {msg}")
+        return f"Bad Request: {msg}", 400
 
-    Args:
-        request (PDFDeliveryRequest): Request containing PDF URL and Telegram chat ID
+    if not isinstance(envelope, dict) or "message" not in envelope:
+        msg = "invalid Pub/Sub message format"
+        print(f"error: {msg}")
+        return f"Bad Request: {msg}", 400
 
-    Returns:
-        Dict: Delivery status
-    """
-    # Validate Telegram credentials
-    if not all(
-        [TelegramConfig.API_ID, TelegramConfig.API_HASH, TelegramConfig.BOT_TOKEN]
-    ):
-        raise HTTPException(
-            status_code=500, detail="Telegram credentials not configured"
-        )
+    pubsub_message = envelope["message"]
 
-    # Initialize Telegram client
+    data = "World"
+    chat_id = None
+    pdf_url = None
+    caption = None
+    if isinstance(pubsub_message, dict) and "data" in pubsub_message:
+        data = base64.b64decode(pubsub_message["data"]).decode("utf-8").strip()
+        json_data = json.loads(data)
+        chat_id = json_data.get("chat_id")
+        pdf_url = json_data.get("pdf_url")
+        caption = json_data.get("caption")
+
+    if not all([chat_id, pdf_url, caption]):
+        msg = "invalid Pub/Sub message: missing chat_id or pdf_url"
+        print(f"error: {msg}")
+        return f"Bad Request: {msg}", 400
+
     async with Client(
         "pdf_bot",
         api_id=TelegramConfig.API_ID,
@@ -90,16 +108,18 @@ async def deliver_pdf(request: PDFDeliveryRequest):
         bot_token=TelegramConfig.BOT_TOKEN,
     ) as client:
         # Send PDF directly from URL
-        success = await send_pdf_to_telegram(
-            client, int(request.chat_id), str(request.pdf_url), request.caption
-        )
+        success = await send_pdf_to_telegram(client, chat_id, str(pdf_url), caption)
 
         if not success:
-            raise HTTPException(
-                status_code=500, detail="Failed to send PDF to Telegram"
-            )
+            print("Failed to send PDF to Telegram")
+            return ("", 204)
 
-        return {"status": "success", "message": "PDF delivered to Telegram"}
+        return ("", 204)
+
+    return ("", 204)
+
+
+# [END cloudrun_pdf_delivery]
 
 
 async def main():

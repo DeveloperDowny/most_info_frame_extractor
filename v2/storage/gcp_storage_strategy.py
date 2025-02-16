@@ -1,6 +1,7 @@
-from storage.storage_strategy import StorageStrategy
-
 from google.cloud import storage
+from urllib.parse import quote
+
+from storage.storage_strategy import StorageStrategy
 
 
 class GCPStorageStrategy(StorageStrategy):
@@ -14,6 +15,10 @@ class GCPStorageStrategy(StorageStrategy):
         blob.upload_from_filename(file_path)
         print(f"File {file_name} uploaded to {self.bucket_name}.")
 
-        uploaded_url = f"https://storage.googleapis.com/{self.bucket_name}/{file_name}"
+        url_encoded_file_name = quote(file_name)
+
+        uploaded_url = (
+            f"https://storage.googleapis.com/{self.bucket_name}/{url_encoded_file_name}"
+        )
 
         return uploaded_url

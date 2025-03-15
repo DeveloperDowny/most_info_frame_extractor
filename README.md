@@ -68,7 +68,7 @@ https://aiarchives.org/id/2tB6EgjI2Y6GAxvJgqT0
 - Now using a peak word count approach
 - It has got even better accuracy with thresholding (currently manual, plan to make it automatic)
 
-![alt text](image-1.png)
+![alt text](images_for_readme/image-1.png)
 
 # TODO
 
@@ -84,7 +84,7 @@ Try suggestions mentioned here
 ### Obstacle 1
 
 Someone explaning on whiteboard:
-![alt text](image-2.png)
+![alt text](images_for_readme/image-2.png)
 
 vkkjvu_peak_frames: Message Passing Systems (Part 2).mp4
 
@@ -96,7 +96,7 @@ possible solutions:
 ### Obstacle 2
 
 In addition to text slides, footage of the person in between the video:
-![alt text](image-3.png)
+![alt text](images_for_readme/image-3.png)
 
 okhdwp_peak_frames: How I Mastered System Design Interviews.mp4
 
@@ -182,12 +182,12 @@ Saved PDF to data/ikgmbd.pdf for Oral Pathology  Salivary Gland Benign Diseases 
 
 ## Updates - Using Moving Averages to find the desired frames
 
-![alt text](image-4.png)
+![alt text](images_for_readme/image-4.png)
 
 Got even better results with the moving averages method
 What I did is plot the moving averages of the word count with small window size and large window size then found the intersection of the two curves and took the frame number at that point
 
-![alt text](image-6.png)
+![alt text](images_for_readme/image-6.png)
 
 Before: 295 frames (has non-max info frames too)
 After: 81 frames (has mostly max info frames, few non-max info frames still present)
@@ -247,18 +247,18 @@ https://claude.ai/chat/75126ab2-61fe-4da6-98ab-235af098df7c
 
 ### 𝘔𝘢𝘹𝘪𝘮𝘪𝘻𝘦 𝘗𝘳𝘰𝘧𝘪𝘵 𝘣𝘺 𝘉𝘶𝘺𝘪𝘯𝘨 𝘢𝘯𝘥 𝘚𝘦𝘭𝘭𝘪𝘯𝘨 𝘢 𝘚𝘵𝘰𝘤𝘬 𝘢𝘵 𝘮𝘰𝘴𝘵 𝘒 𝘛𝘪𝘮𝘦𝘴
 
-![alt text](image-7.png)
-![alt text](image-8.png)
+![alt text](images_for_readme/image-7.png)
+![alt text](images_for_readme/image-8.png)
 
 Nice results
 
 ### You need to take time as weight and scale the char count too
 
-![alt text](image-9.png)
+![alt text](images_for_readme/image-9.png)
 
 The OCR can make mistake and mistakenly score the next frame with more data as having less data than the previous frame. And this data when passed to the Maximise Profit function can give wrong results. So, we need to scale the char count with time as weight to get better results.
 
-![alt text](image-10.png)
+![alt text](images_for_readme/image-10.png)
 Popup in the video can also wrongly come in the OCR char count
 
 ### Using specialized software for person-free frames:
@@ -300,7 +300,7 @@ https://claude.ai/chat/9187f1d3-133a-4126-bc01-61238998ea51
 
 ### Post Processing to Remove Redundant Frames
 
-![alt text](image-11.png)
+![alt text](images_for_readme/image-11.png)
 
 - create a swappable post processor
 - the post processor does pixel wise or some other kind of comparison to remove redundant frames
@@ -428,6 +428,6 @@ spelling correction algorithm
   - The key moments are not always present
   - The key moments are not always present at the most informative frames
 
-- ![alt text](image-12.png)
+- ![alt text](images_for_readme/image-12.png)
   (left: key moments strategy, right: transactions strategy) \
   You can see here that the left one misses the most informative frames that the right one captures

@@ -26,14 +26,20 @@ ENV PYTHONUNBUFFERED True
 # Copying this separately prevents re-running pip install on every code change.
 COPY requirements.txt ./
 
-# Install system dependencies for Tesseract OCR and OpenCV
-RUN apt-get update && apt-get install -y \
+# Install Node.js and other system dependencies
+RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
+    && apt-get update && apt-get install -y \
     tesseract-ocr \
     libtesseract-dev \
     libgl1-mesa-glx \
     libglib2.0-0 \
-    nodejs \ 
-    && rm -rf /var/lib/apt/lists/*
+    nodejs \
+    && rm -rf /var/lib/apt/lists/* \
+    && node --version \
+    && npm --version
+
+# Verify Node.js is in PATH and accessible
+RUN which node && which npm
 
 # Install production dependencies.
 RUN pip install --no-cache-dir -r requirements.txt

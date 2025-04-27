@@ -8,3 +8,10 @@ debug.log
 
 TODO.md
 TODO*.md
+.env
+*.env
+
+
+PLAYBOOK.md
+
+*local*

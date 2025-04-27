@@ -3,7 +3,6 @@ import logging
 import os
 from typing import Optional
 
-import pyrogram
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel, HttpUrl
 from pyrogram import Client
@@ -21,7 +20,7 @@ app = FastAPI()
 
 # Telegram client configuration
 class TelegramConfig:
-    API_ID = os.getenv("TELEGRAM_API_ID")
+    API_ID = int(os.getenv("TELEGRAM_API_ID"))
     API_HASH = os.getenv("TELEGRAM_API_HASH")
     BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
 

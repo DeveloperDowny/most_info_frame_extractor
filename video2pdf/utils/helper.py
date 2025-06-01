@@ -7,6 +7,7 @@ from typing import List
 
 import cv2
 import pandas as pd
+from PIL import Image
 from pytubefix import Playlist
 from pytubefix import YouTube
 from pytubefix.cli import on_progress
@@ -60,15 +61,18 @@ class Helper:
     def save_extracted_frames(extracted_frames, video_path, extracted_frames_directory):
         """For all timestamps, reads the corresponding frame of the video and saves it to the dir"""
         cap = cv2.VideoCapture(video_path)
-        for frame in extracted_frames:
+        for frame_info in extracted_frames:
             frame_output_path = os.path.join(
-                extracted_frames_directory, f"frame_{frame.frame_number}.jpg"
+                extracted_frames_directory, f"frame_{frame_info.frame_number}.jpg"
             )
-            cap.set(cv2.CAP_PROP_POS_FRAMES, frame.frame_number)
+            cap.set(cv2.CAP_PROP_POS_FRAMES, frame_info.frame_number)
             ret, frame = cap.read()
-            cv2.imwrite(frame_output_path, frame)
+            if ret and frame is not None:
+                # Convert OpenCV image (BGR) to PIL image (RGB)
+                frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+                pil_img = Image.fromarray(frame_rgb)
+                pil_img.save(frame_output_path, dpi=(300, 300))  # Save with proper DPI
         cap.release()
-
     @staticmethod
     def clean_text(text: str) -> str:
         """Clean the OCR output"""

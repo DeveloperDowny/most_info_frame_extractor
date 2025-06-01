@@ -10,8 +10,9 @@ from video2pdf.ocr_strategy.ocr_strategy_factory import OCRStrategyFactory
 from video2pdf.utils.directory_manager import DirectoryManager
 from video2pdf.utils.helper import Helper
 
+log_file_name = os.getenv("LOG_FILE_NAME", "logs/video2pdf.log")
 logging.basicConfig(format="%(asctime)s - %(levelname)s - %(message)s", level=logging.INFO,
-                    filename="logs/1_process_all_dirs.log")
+                    filename=log_file_name)
 
 
 def parse_arguments():

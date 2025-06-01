@@ -6,3 +6,4 @@ pytubefix==8.12.1
 pandas
 numpy
 scipy
+sanitize_filename

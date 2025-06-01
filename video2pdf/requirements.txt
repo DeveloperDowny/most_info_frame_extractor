@@ -2,8 +2,15 @@ opencv-python
 pytesseract
 easyocr
 matplotlib
-pytubefix==8.12.1
+pytubefix
 pandas
 numpy
 scipy
 sanitize_filename
+pathlib
+pillow
+imagehash
+tqdm
+typer
+moviepy
+langchain-community

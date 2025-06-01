@@ -3,10 +3,14 @@
 ```bash
 cd /home/vedant/Desktop/glimpsify/most_info_frame_extractor/
 export PYTHONPATH=.
-export BASE_DIR=/home/vedant/Desktop/glimpsify/most_info_frame_extractor/video2pdf/archives/playlist23/
-export URL="https://www.youtube.com/watch?v=rKnD7rLT0lI"
-python /home/vedant/Desktop/glimpsify/most_info_frame_extractor/video2pdf/main.py --input=youtube --url=${URL} --cleanup
+export FOLDER_NAME=docloader
+export LOG_FILE_NAME="/home/vedant/Desktop/glimpsify/most_info_frame_extractor/logs/for-doc-loader.log"
+export BASE_DIR=/home/vedant/Desktop/glimpsify/most_info_frame_extractor/video2pdf/archives/${FOLDER_NAME}
+export URL="https://www.youtube.com/watch?v=6mSx_KJxcHI"
+python /home/vedant/Desktop/glimpsify/most_info_frame_extractor/video2pdf/main.py --input=youtube --url=${URL}
 ```
+
+python /home/vedant/Desktop/glimpsify/most_info_frame_extractor/video2pdf/main.py --input=youtube --url=${URL} --cleanup
 
 # URL List of Playlist URL Input
 ```bash

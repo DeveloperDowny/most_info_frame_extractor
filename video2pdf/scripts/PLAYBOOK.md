@@ -3,10 +3,10 @@
 ```bash
 cd /home/vedant/Desktop/glimpsify/most_info_frame_extractor/
 export PYTHONPATH=.
-export FOLDER_NAME=docloader
-export LOG_FILE_NAME="/home/vedant/Desktop/glimpsify/most_info_frame_extractor/logs/for-doc-loader.log"
+export FOLDER_NAME=docloaderv2
+export LOG_FILE_NAME="/home/vedant/Desktop/glimpsify/most_info_frame_extractor/logs/for-doc-loader-v2.log"
 export BASE_DIR=/home/vedant/Desktop/glimpsify/most_info_frame_extractor/video2pdf/archives/${FOLDER_NAME}
-export URL="https://www.youtube.com/watch?v=6mSx_KJxcHI"
+export URL="https://youtu.be/Q7cTuZIH8IA?si=MSB9stC0z9tPa8ZR"
 python /home/vedant/Desktop/glimpsify/most_info_frame_extractor/video2pdf/main.py --input=youtube --url=${URL}
 ```
 

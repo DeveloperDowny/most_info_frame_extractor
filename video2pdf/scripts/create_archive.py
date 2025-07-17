@@ -1,3 +1,8 @@
+import os
+
+os.environ[
+    "BASE_DIR"] = "/home/vedant/Desktop/glimpsify/most_info_frame_extractor/video2pdf/archives/data_archive_50_python_objects_all_dirs_phash_approval_strategy_v3"
+
 import re
 import shutil
 from pathlib import Path
@@ -88,7 +93,7 @@ def construct_archive_dir(archive_number: int, base_archive_dir: Path | str, for
 
 
 if __name__ == "__main__":
-    name = "54_only_long_videos"
+
 
     # ---- For moving, the object must be a full match of one of the following pattern
     folder_patterns = [
@@ -99,4 +104,6 @@ if __name__ == "__main__":
     file_patterns = [
         r"\w{6}_\w{3}_\w{3}.pdf",
     ]
+    name = "57_cleanup"
+
     main(name, file_patterns, folder_patterns)

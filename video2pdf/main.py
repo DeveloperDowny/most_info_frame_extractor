@@ -1,6 +1,7 @@
 import argparse
 import logging
 import os
+import sys
 
 from video2pdf.extraction_strategy.extraction_strategy_factory import ExtractionStrategyFactory
 from video2pdf.input_strategy.base import BaseInputStrategy
@@ -11,8 +12,26 @@ from video2pdf.utils.directory_manager import DirectoryManager
 from video2pdf.utils.helper import Helper
 
 log_file_name = os.getenv("LOG_FILE_NAME", "logs/video2pdf.log")
-logging.basicConfig(format="%(asctime)s - %(levelname)s - %(message)s", level=logging.INFO,
-                    filename=log_file_name)
+
+# Create the logger
+logger = logging.getLogger()
+logger.setLevel(logging.INFO)  # Set the minimum log level
+
+# Create a file handler
+file_handler = logging.FileHandler(log_file_name)
+file_handler.setLevel(logging.INFO)
+file_formatter = logging.Formatter("%(asctime)s - %(levelname)s - %(message)s")
+file_handler.setFormatter(file_formatter)
+
+# Create a stream handler (for stdout)
+stream_handler = logging.StreamHandler(sys.stdout)
+stream_handler.setLevel(logging.INFO)
+stream_formatter = logging.Formatter("%(asctime)s - %(levelname)s - %(message)s")
+stream_handler.setFormatter(stream_formatter)
+
+# Add both handlers to the logger
+logger.addHandler(file_handler)
+logger.addHandler(stream_handler)
 
 
 def parse_arguments():

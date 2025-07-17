@@ -28,8 +28,6 @@ class PickleInput(BaseInputStrategy):
     def get_frames(self) -> List[ProcessedFrame]:
         python_object_path = os.path.join(self.directory, "processed_frames.pkl")
         processed_frames = Helper.load_python_object(python_object_path)
-        if len(processed_frames) < 800:
-            raise Exception("Too few processed frames")
         return processed_frames
 
     def configure_extraction_strategy(self):

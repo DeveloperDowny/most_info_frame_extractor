@@ -8,7 +8,7 @@ from typing import List
 import cv2
 import pandas as pd
 from PIL import Image
-from pytubefix import Playlist
+from pytubefix import Playlist, Search
 from pytubefix import YouTube
 from pytubefix.cli import on_progress
 
@@ -227,3 +227,11 @@ class Helper:
         cap.release()
         cv2.destroyAllWindows()
         return frame_rate
+
+    @staticmethod
+    def get_video_id(video_name: str):
+        try:
+            video = Search(video_name).videos[0]
+        except IndexError:
+            raise ValueError("Invalid video name")
+        return video.video_id

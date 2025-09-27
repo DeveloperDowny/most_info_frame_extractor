@@ -11,9 +11,8 @@ from PIL import Image
 from pytubefix import Playlist, Search
 from pytubefix import YouTube
 from pytubefix.cli import on_progress
-
-from src.video2pdf.utils.constants import BASE_DIR
-from src.video2pdf.utils.directory_manager import DirectoryManager
+from video2pdf.utils.constants import BASE_DIR
+from video2pdf.utils.directory_manager import DirectoryManager
 
 
 class Helper:
@@ -32,7 +31,6 @@ class Helper:
             directory: str,
             res_priority: List[str] = ["480p", "360p", "720p"],
     ) -> str:
-
         yt = YouTube(video_url, on_progress_callback=on_progress)
 
         streams = None
@@ -73,6 +71,7 @@ class Helper:
                 pil_img = Image.fromarray(frame_rgb)
                 pil_img.save(frame_output_path, dpi=(300, 300))  # Save with proper DPI
         cap.release()
+
     @staticmethod
     def clean_text(text: str) -> str:
         """Clean the OCR output"""
@@ -149,10 +148,7 @@ class Helper:
         Returns:
             int: The duration of the video in seconds.
         """
-
-        # TODO: Call the YouTube API to get the duration of the video
         video = YouTube(video_url)
-
         return video.length
 
     @staticmethod
@@ -192,11 +188,6 @@ class Helper:
             Helper.get_frame_number_from_seconds(seconds, frame_rate)
             for seconds in timestamps
         ]
-
-    @staticmethod
-    def log(message: str):
-        """Print log"""
-        print(message)
 
     @staticmethod
     def save_objects(video_path, processed_frames, directory):

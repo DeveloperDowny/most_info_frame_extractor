@@ -2,16 +2,13 @@ import os
 
 import cv2
 from PIL import Image
-
-from src.video2pdf.utils.directory_manager import DirectoryManager
-from src.video2pdf.utils.file_frame import FileFrame as Frame
+from video2pdf.utils.directory_manager import DirectoryManager
+from video2pdf.utils.file_frame import FileFrame as Frame
 
 
 class PostProcessor:
     @staticmethod
     def add_text_to_frames_and_save(input_dir, list_of_files, output_dir):
-        # TODO: remove return
-        return
         frames = Frame.get_sorted_frames(list_of_files)
 
         n = len(frames)
@@ -79,25 +76,3 @@ class PostProcessor:
             first_image.save(output_pdf_path, save_all=True, append_images=images)
             return True
         return False
-
-
-if __name__ == "__main__":
-    input_dir = "data_archive_1/lrpdqi_profits"
-    output_dir = "data_archive_1/lrpdqi_profits_postprocessed"
-    pdf_output_path = "data_archive_1/lrpdqi_profits.pdf"
-
-    DirectoryManager.create_directory(output_dir)
-
-    list_of_files = os.listdir(input_dir)
-
-    # Process and save individual frames
-    PostProcessor.add_text_to_frames_and_save(input_dir, list_of_files, output_dir)
-
-    # Convert processed images to PDF
-    processed_files = os.listdir(output_dir)
-    if PostProcessor.convert_images_to_pdf(
-            output_dir, processed_files, pdf_output_path
-    ):
-        print(f"PDF successfully created at {pdf_output_path}")
-    else:
-        print("Failed to create PDF - no images found")

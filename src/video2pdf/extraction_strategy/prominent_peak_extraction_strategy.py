@@ -2,9 +2,10 @@ from typing import Any, List
 
 import numpy as np
 from scipy.signal import find_peaks
-
-from src.video2pdf.extraction_strategy.base_extraction_strategy import BaseExtractionStrategy
-from src.video2pdf.utils.processed_frame import ProcessedFrame
+from video2pdf.extraction_strategy.base_extraction_strategy import (
+    BaseExtractionStrategy,
+)
+from video2pdf.utils.processed_frame import ProcessedFrame
 
 
 class ProminentPeakExtractionStrategy(BaseExtractionStrategy):
@@ -82,7 +83,9 @@ class ProminentPeakExtractionStrategy(BaseExtractionStrategy):
             # Find the frame with the maximum character count
             # max() returns the first element in case of ties, preserving order somewhat
             max_frame = max(frames, key=lambda f: f.char_count, default=None)
-            return [max_frame] if max_frame else []  # Return list with the max frame or empty
+            return (
+                [max_frame] if max_frame else []
+            )  # Return list with the max frame or empty
 
         try:
             # Find peaks in the character count signal using configured parameters
@@ -92,7 +95,7 @@ class ProminentPeakExtractionStrategy(BaseExtractionStrategy):
                 char_counts,
                 prominence=self.prominence,
                 distance=self.distance,
-                **self.find_peaks_kwargs  # Pass any extra arguments
+                **self.find_peaks_kwargs,  # Pass any extra arguments
             )
 
             # Select the ProcessedFrame objects corresponding to the detected peak indices

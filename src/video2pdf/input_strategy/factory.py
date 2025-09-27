@@ -1,15 +1,18 @@
-from src.video2pdf.input_strategy.base import BaseInputStrategy
-from src.video2pdf.input_strategy.local_file import LocalFileInput
-from src.video2pdf.input_strategy.pickle import PickleInput
-from src.video2pdf.input_strategy.youtube import YouTubeInput
+from video2pdf.input_strategy.base import BaseInputStrategy
+from video2pdf.input_strategy.local_file import LocalFileInput
+from video2pdf.input_strategy.pickle import PickleInput
+from video2pdf.input_strategy.youtube import YouTubeInput
 
 
 class InputStrategyFactory:
-
     @staticmethod
     def create_input_strategy(
-            input_type, ocr_strategy, extraction_strategy, ocr_approval_strategy, url=None, directory=None,
-
+            input_type,
+            ocr_strategy,
+            extraction_strategy,
+            ocr_approval_strategy,
+            url=None,
+            directory=None,
     ) -> BaseInputStrategy:
         if input_type == "youtube":
             return YouTubeInput(
@@ -21,8 +24,6 @@ class InputStrategyFactory:
             )
         elif input_type == "pickle":
             """The directory path should be like this `xxxxxx_python_object`"""
-            return PickleInput(
-                directory, ocr_strategy, extraction_strategy
-            )
+            return PickleInput(directory, ocr_strategy, extraction_strategy)
         else:
             raise ValueError("Invalid input type")

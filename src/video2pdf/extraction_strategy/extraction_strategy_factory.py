@@ -1,10 +1,20 @@
 from typing import Any
 
-from src.video2pdf.extraction_strategy.base_extraction_strategy import BaseExtractionStrategy
-from src.video2pdf.extraction_strategy.k_transactions_extraction_strategy import KTransactionsExtractionStrategy
-from src.video2pdf.extraction_strategy.key_moments_extraction_strategy import KeyMomentsExtractionStrategy
-from src.video2pdf.extraction_strategy.prominent_peak_extraction_strategy import ProminentPeakExtractionStrategy
-from src.video2pdf.extraction_strategy.timestamp_extraction_strategy import TimestampExtractionStrategy
+from video2pdf.extraction_strategy.base_extraction_strategy import (
+    BaseExtractionStrategy,
+)
+from video2pdf.extraction_strategy.k_transactions_extraction_strategy import (
+    KTransactionsExtractionStrategy,
+)
+from video2pdf.extraction_strategy.key_moments_extraction_strategy import (
+    KeyMomentsExtractionStrategy,
+)
+from video2pdf.extraction_strategy.prominent_peak_extraction_strategy import (
+    ProminentPeakExtractionStrategy,
+)
+from video2pdf.extraction_strategy.timestamp_extraction_strategy import (
+    TimestampExtractionStrategy,
+)
 
 
 class ExtractionStrategyFactory:
@@ -14,14 +24,12 @@ class ExtractionStrategyFactory:
         "k_transactions": KTransactionsExtractionStrategy,
         "key_moments": KeyMomentsExtractionStrategy,
         "timestamps": TimestampExtractionStrategy,
-        "prominent_peaks": ProminentPeakExtractionStrategy
+        "prominent_peaks": ProminentPeakExtractionStrategy,
     }
 
     @classmethod
     def create_extraction_strategy(
-            cls,
-            extraction_type: str,
-            **kwargs: Any
+            cls, extraction_type: str, **kwargs: Any
     ) -> BaseExtractionStrategy:
         """
         Create an extraction strategy based on the specified type and parameters.
@@ -38,8 +46,10 @@ class ExtractionStrategyFactory:
         """
         if extraction_type not in cls.STRATEGIES:
             valid_types = ", ".join(cls.STRATEGIES.keys())
-            raise ValueError(f"Invalid extraction type: '{extraction_type}'. "
-                             f"Valid types are: {valid_types}")
+            raise ValueError(
+                f"Invalid extraction type: '{extraction_type}'. "
+                f"Valid types are: {valid_types}"
+            )
 
         strategy_class = cls.STRATEGIES[extraction_type]
 
@@ -47,7 +57,9 @@ class ExtractionStrategyFactory:
         if extraction_type == "timestamps":
             timestamps = kwargs.get("timestamps")
             if timestamps is None:
-                raise ValueError("Timestamps must be provided for timestamp extraction strategy")
+                raise ValueError(
+                    "Timestamps must be provided for timestamp extraction strategy"
+                )
             return strategy_class(timestamps)
 
         return strategy_class()

@@ -1,8 +1,10 @@
 from typing import List
 
-from src.video2pdf.extraction_strategy.base_extraction_strategy import BaseExtractionStrategy
-from src.video2pdf.utils.helper import Helper
-from src.video2pdf.utils.processed_frame import ProcessedFrame
+from video2pdf.extraction_strategy.base_extraction_strategy import (
+    BaseExtractionStrategy,
+)
+from video2pdf.utils.helper import Helper
+from video2pdf.utils.processed_frame import ProcessedFrame
 
 
 class TimestampExtractionStrategy(BaseExtractionStrategy):

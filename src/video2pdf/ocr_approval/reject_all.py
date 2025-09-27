@@ -1,6 +1,6 @@
 import cv2
 
-from src.video2pdf.ocr_approval.base import OCRApprovalStrategy
+from video2pdf.ocr_approval.base import OCRApprovalStrategy
 
 
 class RejectAllApprovalStrategy(OCRApprovalStrategy):

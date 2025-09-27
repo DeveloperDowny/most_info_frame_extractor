@@ -1,10 +1,9 @@
 from abc import ABC, abstractmethod
 
-from src.video2pdf.utils.helper import Helper
+from video2pdf.utils.helper import Helper
 
 
 class OCRStrategy(ABC):
-
     @abstractmethod
     def extract_text(self, image):
         pass

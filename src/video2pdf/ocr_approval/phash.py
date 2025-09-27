@@ -1,7 +1,7 @@
 import cv2
 
-from src.video2pdf.ocr_approval.base import OCRApprovalStrategy
-from src.video2pdf.utils.image_utils import ImageUtils
+from video2pdf.ocr_approval.base import OCRApprovalStrategy
+from video2pdf.utils.image_utils import ImageUtils
 
 
 class PHash(OCRApprovalStrategy):

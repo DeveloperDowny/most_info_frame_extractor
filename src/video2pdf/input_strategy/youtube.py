@@ -1,17 +1,23 @@
 import os
 from typing import List
 
-from src.video2pdf.extraction_strategy.base_extraction_strategy import BaseExtractionStrategy
-from src.video2pdf.extraction_strategy.key_moments_extraction_strategy import KeyMomentsExtractionStrategy
-from src.video2pdf.extraction_strategy.timestamp_extraction_strategy import TimestampExtractionStrategy
-from src.video2pdf.input_strategy.base import BaseInputStrategy
-from src.video2pdf.ocr_approval.base import OCRApprovalStrategy
-from src.video2pdf.ocr_strategy.ocr_strategy import OCRStrategy
-from src.video2pdf.utils.constants import BASE_DIR
-from src.video2pdf.utils.directory_manager import DirectoryManager
-from src.video2pdf.utils.helper import Helper
-from src.video2pdf.utils.processed_frame import ProcessedFrame
-from src.video2pdf.utils.random_generator import RandomGenerator
+from video2pdf.extraction_strategy.base_extraction_strategy import (
+    BaseExtractionStrategy,
+)
+from video2pdf.extraction_strategy.key_moments_extraction_strategy import (
+    KeyMomentsExtractionStrategy,
+)
+from video2pdf.extraction_strategy.timestamp_extraction_strategy import (
+    TimestampExtractionStrategy,
+)
+from video2pdf.input_strategy.base import BaseInputStrategy
+from video2pdf.ocr_approval.base import OCRApprovalStrategy
+from video2pdf.ocr_strategy.ocr_strategy import OCRStrategy
+from video2pdf.utils.constants import BASE_DIR
+from video2pdf.utils.directory_manager import DirectoryManager
+from video2pdf.utils.helper import Helper
+from video2pdf.utils.processed_frame import ProcessedFrame
+from video2pdf.utils.random_generator import RandomGenerator
 
 
 class YouTubeInput(BaseInputStrategy):
@@ -41,8 +47,13 @@ class YouTubeInput(BaseInputStrategy):
             self.video_path, self.ocr_strategy, self.ocr_approval_strategy
         )
 
-    def __init__(self, video_url: str, ocr_strategy: OCRStrategy, extraction_strategy: BaseExtractionStrategy,
-                 ocr_approval_strategy: OCRApprovalStrategy):
+    def __init__(
+            self,
+            video_url: str,
+            ocr_strategy: OCRStrategy,
+            extraction_strategy: BaseExtractionStrategy,
+            ocr_approval_strategy: OCRApprovalStrategy,
+    ):
         super().__init__()
         self.video_url = video_url
         self.ocr_strategy = ocr_strategy

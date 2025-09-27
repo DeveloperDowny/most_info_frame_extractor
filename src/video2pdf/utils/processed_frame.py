@@ -2,12 +2,11 @@ import os
 from typing import List
 
 from tqdm import tqdm
-
-from src.video2pdf.ocr_approval.base import OCRApprovalStrategy
-from src.video2pdf.ocr_strategy.ocr_strategy import OCRStrategy
-from src.video2pdf.utils.directory_manager import DirectoryManager
-from src.video2pdf.utils.helper import Helper
-from src.video2pdf.utils.video_processor import VideoProcessor
+from video2pdf.ocr_approval.base import OCRApprovalStrategy
+from video2pdf.ocr_strategy.ocr_strategy import OCRStrategy
+from video2pdf.utils.directory_manager import DirectoryManager
+from video2pdf.utils.helper import Helper
+from video2pdf.utils.video_processor import VideoProcessor
 
 
 class ProcessedFrame:
@@ -40,7 +39,6 @@ class ProcessedFrame:
         for frame in tqdm(
                 VideoProcessor.get_frames(video_path, 3), desc="Processing Frames"
         ):
-
             if not ocr_approval_strategy.permit_ocr(frame.frame, old_frame):
                 # result should be same as previous frame
                 processed_frame = ProcessedFrame()
@@ -62,7 +60,6 @@ class ProcessedFrame:
 
     @staticmethod
     def from_youtube_video(video_url, directory, ocr_strategy: OCRStrategy):
-
         Helper.download_youtube_video(video_url, directory)
         video_path = DirectoryManager.get_video_path(directory)
         return ProcessedFrame.from_video(video_path, ocr_strategy)

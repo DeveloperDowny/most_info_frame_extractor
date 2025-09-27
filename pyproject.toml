@@ -1,27 +1,36 @@
 [build-system]
-requires = ["hatchling >= 1.26",
-    "opencv-python",
-    "pytesseract",
-    "easyocr",
-    "matplotlib",
-    "pytubefix",
-    "tqdm",
-]
+requires = ["hatchling >= 1.26"]
 build-backend = "hatchling.build"
 
 [project]
 name = "video2pdf"
-version = "0.0.1"
-authors = [{ name = "Vedant Panchal", email = "vedantpanchal12345@gmail.com" },
-]
+version = "0.0.7"
+authors = [{ name = "Vedant Panchal", email = "vedantpanchal12345@gmail.com" }]
 description = "Convert YouTube educational video to crisp PDF notes"
 readme = "README.md"
 requires-python = ">=3.9"
-classifiers = ["Programming Language :: Python :: 3",
+classifiers = [
+    "Programming Language :: Python :: 3",
     "Operating System :: OS Independent",
 ]
 license = "MIT"
 license-files = ["LICEN[CS]E*"]
+dependencies = [
+    "imagehash",
+    "matplotlib",
+    "numpy",
+    "opencv-python",
+    "pandas",
+    "pillow",
+    "pytesseract",
+    "pytubefix",
+    "sanitize-filename",
+    "scipy",
+    "tqdm"
+]
+
+[project.optional-dependencies]
+easyocr = ["easyocr"]
 
 [project.urls]
 Homepage = "https://github.com/DeveloperDowny/most_info_frame_extractor"

@@ -1,12 +1,20 @@
 import cv2
-import easyocr
 import numpy as np
 
-from src.video2pdf.ocr_strategy.ocr_strategy import OCRStrategy
+from video2pdf.ocr_strategy.ocr_strategy import OCRStrategy
+
+try:
+    import easyocr
+except ImportError:
+    easyocr = None
 
 
 class EasyOCR(OCRStrategy):
     def __init__(self):
+        if easyocr is None:
+            raise ImportError(
+                "Run `pip install video2pdf[easyocr]` to enable support for easyocr"
+            )
         self.reader = easyocr.Reader(["en"])
 
     def extract_text(self, img):

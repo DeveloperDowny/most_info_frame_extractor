@@ -1,6 +1,0 @@
-opencv-python
-pytesseract
-easyocr
-matplotlib
-pytubefix
-tqdm

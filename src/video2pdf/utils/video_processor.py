@@ -1,12 +1,10 @@
 from typing import Iterator
 
 import cv2
-
-from src.video2pdf.utils.frame import Frame
+from video2pdf.utils.frame import Frame
 
 
 class VideoProcessor:
-
     @staticmethod
     def get_frames(video_path: str, interval: int) -> Iterator[Frame]:
         cap = cv2.VideoCapture(video_path)
@@ -32,6 +30,7 @@ class VideoProcessor:
             cap.release()
             # Call garbage collector explicitly to help clean up any remaining references
             import gc
+
             gc.collect()
 
     @staticmethod

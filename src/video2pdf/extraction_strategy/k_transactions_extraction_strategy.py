@@ -4,9 +4,10 @@ import numpy as np
 import pandas as pd
 from scipy import signal
 from scipy.ndimage import gaussian_filter1d
-
-from src.video2pdf.extraction_strategy.base_extraction_strategy import BaseExtractionStrategy
-from src.video2pdf.utils.processed_frame import ProcessedFrame
+from video2pdf.extraction_strategy.base_extraction_strategy import (
+    BaseExtractionStrategy,
+)
+from video2pdf.utils.processed_frame import ProcessedFrame
 
 
 class KTransactionsExtractionStrategy(BaseExtractionStrategy):

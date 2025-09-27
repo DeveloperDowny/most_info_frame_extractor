@@ -3,13 +3,15 @@ import logging
 import os
 import sys
 
-from src.video2pdf.extraction_strategy.extraction_strategy_factory import ExtractionStrategyFactory
-from src.video2pdf.input_strategy.base import BaseInputStrategy
-from src.video2pdf.input_strategy.factory import InputStrategyFactory
-from src.video2pdf.ocr_approval.factory import OCRApprovalStrategyFactory
-from src.video2pdf.ocr_strategy.ocr_strategy_factory import OCRStrategyFactory
-from src.video2pdf.utils.directory_manager import DirectoryManager
-from src.video2pdf.utils.helper import Helper
+from video2pdf.extraction_strategy.extraction_strategy_factory import (
+    ExtractionStrategyFactory,
+)
+from video2pdf.input_strategy.base import BaseInputStrategy
+from video2pdf.input_strategy.factory import InputStrategyFactory
+from video2pdf.ocr_approval.factory import OCRApprovalStrategyFactory
+from video2pdf.ocr_strategy.ocr_strategy_factory import OCRStrategyFactory
+from video2pdf.utils.directory_manager import DirectoryManager
+from video2pdf.utils.helper import Helper
 
 log_file_name = os.getenv("LOG_FILE_NAME", "logs/video2pdf.log")
 
@@ -58,7 +60,7 @@ def parse_arguments():
     )
     parser.add_argument(
         "--ocr",
-        choices=["tesseract", "easy"],
+        choices=["tesseract", "easyocr"],
         default="tesseract",
         help="Specify the OCR strategy.",
     )

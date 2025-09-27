@@ -106,7 +106,7 @@ class Helper:
     @staticmethod
     def index_results(directory, video_file_path):
         """Save directory to video name mapping"""
-        result_file_path = Path(BASE_DIR) / "results.xlsx"
+        result_file_path = Path(BASE_DIR) / "results.csv"
 
         if not result_file_path.exists():
             df = pd.DataFrame()

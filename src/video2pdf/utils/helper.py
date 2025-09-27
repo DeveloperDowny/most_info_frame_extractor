@@ -117,7 +117,7 @@ class Helper:
             "video_path": video_file_path,
         }
         df = pd.concat([df, pd.DataFrame([new_row])])
-        df.to_excel(result_file_path, index=False)
+        df.to_csv(result_file_path, sep="\t", index=False,)
 
     @staticmethod
     def load_python_object(python_object_path):

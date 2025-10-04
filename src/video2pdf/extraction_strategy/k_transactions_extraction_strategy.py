@@ -1,13 +1,17 @@
+import logging
 from typing import List
 
 import numpy as np
 import pandas as pd
 from scipy import signal
 from scipy.ndimage import gaussian_filter1d
+
 from video2pdf.extraction_strategy.base_extraction_strategy import (
     BaseExtractionStrategy,
 )
 from video2pdf.utils.processed_frame import ProcessedFrame
+
+logger = logging.getLogger(__name__)
 
 
 class KTransactionsExtractionStrategy(BaseExtractionStrategy):
@@ -89,7 +93,7 @@ class KTransactionsExtractionStrategy(BaseExtractionStrategy):
             # Set k as the number of detected peaks
             # self.k = len(peaks) #+ 10
             self.k = len(peaks) + 5
-            print(f"Detected {self.k} significant transitions in the signal")
+            logger.info(f"Detected {self.k} significant transitions in the signal")
 
         else:
             # Calculate k using signal processing if not already set
@@ -101,7 +105,9 @@ class KTransactionsExtractionStrategy(BaseExtractionStrategy):
                     peaks, _ = self.calculate_peaks(x, y)
                     # Set k as the number of detected peaks
                     self.k = len(peaks)
-                    print(f"Detected {self.k} significant transitions in the signal")
+                    logger.info(
+                        f"Detected {self.k} significant transitions in the signal"
+                    )
                 else:
                     self.k = int(should_auto_calculate_or_k)
 

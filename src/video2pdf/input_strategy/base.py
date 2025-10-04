@@ -2,6 +2,7 @@ import logging
 import os
 from abc import ABC, abstractmethod
 from datetime import datetime
+import shutil
 from typing import List, Optional
 
 from video2pdf.utils.data_plotter import DataPlotter
@@ -90,6 +91,15 @@ class BaseInputStrategy(ABC):
         logger.info(f"PDF for video {self.video_path!r}: {pdf_path!r}")
         video_name = Helper.get_video_name(self.video_path)
         logger.info(f"Saved PDF to {pdf_path!r} for video {video_name!r}")
+
+        # ---- Copy PDF to output path
+        pdf_output_path = Helper.get_pdf_output_path(video_name)
+        pdf_output_path.parent.mkdir(exist_ok=True, parents=True)
+        shutil.copy(str(pdf_path), str(pdf_output_path))
+        logger.info(
+            f"Result PDF for video {video_name!r} saved at {str(pdf_output_path)}"
+        )
+
         return self.internal_id
 
     @abstractmethod
@@ -112,9 +122,9 @@ class BaseInputStrategy(ABC):
         Helper.index_results(self.internal_id, self.video_path)
 
     def plot_graph(
-            self,
-            frames: List[ProcessedFrame],
-            extracted_frames: Optional[List[ProcessedFrame]] = None,
+        self,
+        frames: List[ProcessedFrame],
+        extracted_frames: Optional[List[ProcessedFrame]] = None,
     ):
         """Plot and save graph of the signal of varying ocr text length"""
         x_data, y_data = ProcessedFrame.get_data_for_plotting(frames)

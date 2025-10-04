@@ -13,6 +13,7 @@ from pytubefix import YouTube
 from pytubefix.cli import on_progress
 from video2pdf.utils.constants import BASE_DIR
 from video2pdf.utils.directory_manager import DirectoryManager
+import shutil
 
 
 class Helper:
@@ -27,9 +28,9 @@ class Helper:
 
     @staticmethod
     def download_youtube_video(
-            video_url: str,
-            directory: str,
-            res_priority: List[str] = ["480p", "360p", "720p"],
+        video_url: str,
+        directory: str,
+        res_priority: List[str] = ["480p", "360p", "720p"],
     ) -> str:
         yt = YouTube(video_url, on_progress_callback=on_progress)
 
@@ -111,13 +112,17 @@ class Helper:
         if not result_file_path.exists():
             df = pd.DataFrame()
         else:
-            df = pd.read_excel(result_file_path)
+            df = pd.read_csv(result_file_path, sep="\t")
         new_row = {
             "internal_id": directory,
             "video_path": video_file_path,
         }
         df = pd.concat([df, pd.DataFrame([new_row])])
-        df.to_csv(result_file_path, sep="\t", index=False,)
+        df.to_csv(
+            result_file_path,
+            sep="\t",
+            index=False,
+        )
 
     @staticmethod
     def load_python_object(python_object_path):
@@ -209,6 +214,13 @@ class Helper:
         """Give video name from video_path"""
         video_name = os.path.basename(video_path)
         return video_name
+
+    @staticmethod
+    def get_pdf_output_path(video_name: str, output_dir: str = "output") -> Path:
+        video_name_path = Path(video_name)
+        output_dir = Path.cwd().joinpath(output_dir).resolve()
+        output_path = output_dir / video_name_path.with_suffix(".pdf")
+        return output_path
 
     @staticmethod
     def get_frame_rate(video_path):

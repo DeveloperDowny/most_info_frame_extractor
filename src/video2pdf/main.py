@@ -13,17 +13,10 @@ from video2pdf.ocr_strategy.ocr_strategy_factory import OCRStrategyFactory
 from video2pdf.utils.directory_manager import DirectoryManager
 from video2pdf.utils.helper import Helper
 
-log_file_name = os.getenv("LOG_FILE_NAME", "logs/video2pdf.log")
 
 # Create the logger
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)  # Set the minimum log level
-
-# Create a file handler
-file_handler = logging.FileHandler(log_file_name)
-file_handler.setLevel(logging.INFO)
-file_formatter = logging.Formatter("%(asctime)s - %(levelname)s - %(message)s")
-file_handler.setFormatter(file_formatter)
 
 # Create a stream handler (for stdout)
 stream_handler = logging.StreamHandler(sys.stdout)
@@ -32,7 +25,6 @@ stream_formatter = logging.Formatter("%(asctime)s - %(levelname)s - %(message)s"
 stream_handler.setFormatter(stream_formatter)
 
 # Add both handlers to the logger
-logger.addHandler(file_handler)
 logger.addHandler(stream_handler)
 
 
@@ -84,8 +76,9 @@ def parse_arguments():
     )
     parser.add_argument(
         "--cleanup",
-        action="store_true",
+        type=bool,
         help="Cleanup intermediate files after processing.",
+        default=True,
     )
     return parser.parse_args()
 
@@ -93,7 +86,7 @@ def parse_arguments():
 def cleanup_directory(directory):
     if os.path.exists(directory):
         DirectoryManager.delete_directory(directory)
-        print(f"Cleaned up directory: {directory}")
+        logger.debug(f"Cleaned up directory: {directory}")
 
 
 def main():

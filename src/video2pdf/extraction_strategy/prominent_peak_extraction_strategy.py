@@ -1,11 +1,15 @@
+import logging
 from typing import Any, List
 
 import numpy as np
 from scipy.signal import find_peaks
+
 from video2pdf.extraction_strategy.base_extraction_strategy import (
     BaseExtractionStrategy,
 )
 from video2pdf.utils.processed_frame import ProcessedFrame
+
+logger = logging.getLogger(__name__)
 
 
 class ProminentPeakExtractionStrategy(BaseExtractionStrategy):
@@ -105,7 +109,7 @@ class ProminentPeakExtractionStrategy(BaseExtractionStrategy):
         except Exception as e:
             # Catch potential errors during peak finding (e.g., invalid kwargs)
             # In a real application, consider logging this error
-            print(f"Error during peak finding: {e}")
+            logger.error(f"Error during peak finding: {e}")
             return []  # Return empty list on error
 
         return extracted_frames

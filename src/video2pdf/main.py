@@ -52,7 +52,7 @@ def parse_arguments():
     )
     parser.add_argument(
         "--ocr",
-        choices=["tesseract", "easyocr"],
+        choices=["tesseract", "easyocr", "paddleocr"], 
         default="tesseract",
         help="Specify the OCR strategy.",
     )

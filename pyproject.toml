@@ -31,6 +31,7 @@ dependencies = [
 
 [project.optional-dependencies]
 easyocr = ["easyocr"]
+paddleocr = ["paddleocr", "paddlepaddle"]
 
 [project.urls]
 Homepage = "https://github.com/DeveloperDowny/most_info_frame_extractor"

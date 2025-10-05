@@ -11,9 +11,10 @@ from PIL import Image
 from pytubefix import Playlist, Search
 from pytubefix import YouTube
 from pytubefix.cli import on_progress
+from sanitize_filename import sanitize
+
 from video2pdf.utils.constants import BASE_DIR
 from video2pdf.utils.directory_manager import DirectoryManager
-import shutil
 
 
 class Helper:
@@ -27,11 +28,8 @@ class Helper:
         return int(re.sub(r"\D", "", text))
 
     @staticmethod
-    def download_youtube_video(
-        video_url: str,
-        directory: str,
-        res_priority: List[str] = ["480p", "360p", "720p"],
-    ) -> str:
+    def download_youtube_video(video_url: str, directory: str,
+            res_priority: List[str] = ["480p", "360p", "720p"], ) -> str:
         yt = YouTube(video_url, on_progress_callback=on_progress)
 
         streams = None
@@ -43,7 +41,10 @@ class Helper:
         if not streams:
             raise Exception("No streams found for the video.")
 
-        streams[0].download(directory)
+        title = yt.title
+        file_name = f"{title}.mp4"
+        file_name = sanitize(file_name)
+        streams[0].download(output_path=directory, filename=file_name)
         video_file_name = DirectoryManager.get_video_path(directory)
         return os.path.join(directory, video_file_name)
 
@@ -61,9 +62,7 @@ class Helper:
         """For all timestamps, reads the corresponding frame of the video and saves it to the dir"""
         cap = cv2.VideoCapture(video_path)
         for frame_info in extracted_frames:
-            frame_output_path = os.path.join(
-                extracted_frames_directory, f"frame_{frame_info.frame_number}.jpg"
-            )
+            frame_output_path = os.path.join(extracted_frames_directory, f"frame_{frame_info.frame_number}.jpg")
             cap.set(cv2.CAP_PROP_POS_FRAMES, frame_info.frame_number)
             ret, frame = cap.read()
             if ret and frame is not None:
@@ -113,16 +112,9 @@ class Helper:
             df = pd.DataFrame()
         else:
             df = pd.read_csv(result_file_path, sep="\t")
-        new_row = {
-            "internal_id": directory,
-            "video_path": video_file_path,
-        }
+        new_row = {"internal_id": directory, "video_path": video_file_path, }
         df = pd.concat([df, pd.DataFrame([new_row])])
-        df.to_csv(
-            result_file_path,
-            sep="\t",
-            index=False,
-        )
+        df.to_csv(result_file_path, sep="\t", index=False, )
 
     @staticmethod
     def load_python_object(python_object_path):
@@ -176,9 +168,7 @@ class Helper:
         """Get the key moments for the video"""
         video = YouTube(video_url)
         key_moments = video.key_moments
-        key_moment_start_seconds = [
-            key_moment.start_seconds for key_moment in key_moments
-        ]
+        key_moment_start_seconds = [key_moment.start_seconds for key_moment in key_moments]
         return key_moment_start_seconds
 
     @staticmethod
@@ -189,22 +179,15 @@ class Helper:
     @staticmethod
     def get_key_frame_numbers(timestamps: List[float], frame_rate):
         """Get key frame numbers from timestamps."""
-        return [
-            Helper.get_frame_number_from_seconds(seconds, frame_rate)
-            for seconds in timestamps
-        ]
+        return [Helper.get_frame_number_from_seconds(seconds, frame_rate) for seconds in timestamps]
 
     @staticmethod
     def save_objects(video_path, processed_frames, directory):
         """Save processed_frames to pickle file. Save video path to a text file."""
         python_object_directory = directory + "_python_object"
         DirectoryManager.create_directory(python_object_directory)
-        python_object_path = os.path.join(
-            python_object_directory, "processed_frames.pkl"
-        )
-        video_path_text_file_path = os.path.join(
-            python_object_directory, "video_path.txt"
-        )
+        python_object_path = os.path.join(python_object_directory, "processed_frames.pkl")
+        video_path_text_file_path = os.path.join(python_object_directory, "video_path.txt")
         Helper.save_text(video_path, video_path_text_file_path)
         Helper.save_python_objects(processed_frames, python_object_path)
         return python_object_directory

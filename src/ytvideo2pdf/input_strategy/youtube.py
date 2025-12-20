@@ -21,6 +21,22 @@ from ytvideo2pdf.utils.random_generator import RandomGenerator
 
 
 class YouTubeInput(BaseInputStrategy):
+    def __init__(
+        self,
+        video_url: str,
+        ocr_strategy: OCRStrategy,
+        extraction_strategy: BaseExtractionStrategy,
+        ocr_approval_strategy: OCRApprovalStrategy,
+        interval: int = 3,
+        **kwargs,
+    ):
+        super().__init__()
+        self.video_url = video_url
+        self.ocr_strategy = ocr_strategy
+        self.extraction_strategy = extraction_strategy
+        self.ocr_approval_strategy = ocr_approval_strategy
+        self.interval = interval  # seconds
+
     def configure_extraction_strategy(self):
         # TODO: Ideally, this should not be here. Check if there is a better way to do this.
         if isinstance(self.extraction_strategy, KeyMomentsExtractionStrategy):
@@ -44,18 +60,8 @@ class YouTubeInput(BaseInputStrategy):
 
     def get_frames(self) -> List[ProcessedFrame]:
         return ProcessedFrame.from_video(
-            self.video_path, self.ocr_strategy, self.ocr_approval_strategy
+            self.video_path,
+            self.ocr_strategy,
+            self.ocr_approval_strategy,
+            self.interval,
         )
-
-    def __init__(
-            self,
-            video_url: str,
-            ocr_strategy: OCRStrategy,
-            extraction_strategy: BaseExtractionStrategy,
-            ocr_approval_strategy: OCRApprovalStrategy,
-    ):
-        super().__init__()
-        self.video_url = video_url
-        self.ocr_strategy = ocr_strategy
-        self.extraction_strategy = extraction_strategy
-        self.ocr_approval_strategy = ocr_approval_strategy

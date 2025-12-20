@@ -15,9 +15,9 @@ logger = logging.getLogger(__name__)
 
 
 class KTransactionsExtractionStrategy(BaseExtractionStrategy):
-    def __init__(self):
-        self.k = None
-        self.auto_calculate_k = False
+    def __init__(self, k: int = None, auto_calculate_k: bool = False, **kwargs):
+        self.k = k
+        self.auto_calculate_k = auto_calculate_k
 
     def calculate_peaks(self, x, y, window_size=5, prominence=0.1, width=None):
         """

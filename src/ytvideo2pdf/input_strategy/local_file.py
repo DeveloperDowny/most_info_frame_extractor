@@ -18,6 +18,22 @@ from ytvideo2pdf.utils.random_generator import RandomGenerator
 
 
 class LocalFileInput(BaseInputStrategy):
+    def __init__(
+        self,
+        directory: str,
+        ocr_strategy: OCRStrategy,
+        extraction_strategy: BaseExtractionStrategy,
+        ocr_approval_strategy: OCRApprovalStrategy,
+        interval: int = 3,
+        **kwargs,
+    ):
+        super().__init__()
+        self.directory = os.path.join(BASE_DIR, directory)
+        self.ocr_strategy = ocr_strategy
+        self.extraction_strategy = extraction_strategy
+        self.ocr_approval_strategy = ocr_approval_strategy
+        self.interval = interval  # seconds
+
     def configure_extraction_strategy(self):
         if isinstance(self.extraction_strategy, TimestampExtractionStrategy):
             self.extraction_strategy.frame_rate = Helper.get_frame_rate(self.video_path)
@@ -33,18 +49,5 @@ class LocalFileInput(BaseInputStrategy):
 
     def get_frames(self) -> List[ProcessedFrame]:
         return ProcessedFrame.from_video(
-            self.video_path, self.ocr_strategy, self.ocr_approval_strategy
+            self.video_path, self.ocr_strategy, self.ocr_approval_strategy, self.interval
         )
-
-    def __init__(
-            self,
-            directory: str,
-            ocr_strategy: OCRStrategy,
-            extraction_strategy: BaseExtractionStrategy,
-            ocr_approval_strategy: OCRApprovalStrategy,
-    ):
-        super().__init__()
-        self.directory = os.path.join(BASE_DIR, directory)
-        self.ocr_strategy = ocr_strategy
-        self.extraction_strategy = extraction_strategy
-        self.ocr_approval_strategy = ocr_approval_strategy

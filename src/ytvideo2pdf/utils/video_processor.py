@@ -6,6 +6,17 @@ from ytvideo2pdf.utils.frame import Frame
 
 class VideoProcessor:
     @staticmethod
+    def get_total_frames(video_path: str, interval: int = 3) -> int:
+        cap = cv2.VideoCapture(video_path)
+        fps = cap.get(cv2.CAP_PROP_FPS)
+        total_frame_count = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
+        cap.release()
+
+        frame_interval = int(fps * interval)
+        # Calculate how many frames match the interval
+        return (total_frame_count + frame_interval - 1) // frame_interval
+
+    @staticmethod
     def get_frames(video_path: str, interval: int) -> Iterator[Frame]:
         cap = cv2.VideoCapture(video_path)
         fps = cap.get(cv2.CAP_PROP_FPS)

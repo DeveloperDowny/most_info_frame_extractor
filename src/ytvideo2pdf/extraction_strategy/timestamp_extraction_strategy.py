@@ -8,7 +8,7 @@ from ytvideo2pdf.utils.processed_frame import ProcessedFrame
 
 
 class TimestampExtractionStrategy(BaseExtractionStrategy):
-    def __init__(self, timestamps: List):
+    def __init__(self, timestamps: List, **kwargs):
         self.timestamps = timestamps
         self.frame_rate = None
 

@@ -4,7 +4,6 @@ from typing import List
 from tqdm import tqdm
 from ytvideo2pdf.ocr_approval.base import OCRApprovalStrategy
 from ytvideo2pdf.ocr_strategy.ocr_strategy import OCRStrategy
-from ytvideo2pdf.utils.directory_manager import DirectoryManager
 from ytvideo2pdf.utils.helper import Helper
 from ytvideo2pdf.utils.video_processor import VideoProcessor
 
@@ -29,15 +28,20 @@ class ProcessedFrame:
 
     @staticmethod
     def from_video(
-            video_path,
-            ocr_strategy: OCRStrategy,
-            ocr_approval_strategy: OCRApprovalStrategy,
+        video_path,
+        ocr_strategy: OCRStrategy,
+        ocr_approval_strategy: OCRApprovalStrategy,
+        interval: int = 3,
     ):
         processed_frames: List[ProcessedFrame] = []
         old_frame = None
 
+        total_steps = VideoProcessor.get_total_frames(video_path, interval)
+
         for frame in tqdm(
-                VideoProcessor.get_frames(video_path, 3), desc="Processing Frames"
+            VideoProcessor.get_frames(video_path, interval),
+            desc="Processing Frames",
+            total=total_steps,
         ):
             if not ocr_approval_strategy.permit_ocr(frame.frame, old_frame):
                 # result should be same as previous frame
@@ -57,12 +61,6 @@ class ProcessedFrame:
             processed_frame.char_count = ocr_strategy.get_char_count(frame.frame)
             processed_frames.append(processed_frame)
         return processed_frames
-
-    @staticmethod
-    def from_youtube_video(video_url, directory, ocr_strategy: OCRStrategy):
-        Helper.download_youtube_video(video_url, directory)
-        video_path = DirectoryManager.get_video_path(directory)
-        return ProcessedFrame.from_video(video_path, ocr_strategy)
 
     @staticmethod
     def get_data_for_plotting(processed_frames: List["ProcessedFrame"]):

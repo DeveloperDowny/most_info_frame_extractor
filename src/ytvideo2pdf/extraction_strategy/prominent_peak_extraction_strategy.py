@@ -95,11 +95,25 @@ class ProminentPeakExtractionStrategy(BaseExtractionStrategy):
             # Find peaks in the character count signal using configured parameters
             # The `_` variable holds the properties dictionary returned by find_peaks,
             # which we don't need for basic index selection.
+            height = self.find_peaks_kwargs.get("height", None)
+            threshold = self.find_peaks_kwargs.get("threshold", None)
+            distance = self.find_peaks_kwargs.get("distance", self.distance)
+            prominence = self.find_peaks_kwargs.get("prominence", self.prominence)
+            width = self.find_peaks_kwargs.get("width", None)
+            wlen = self.find_peaks_kwargs.get("wlen", None)
+            rel_height = self.find_peaks_kwargs.get("rel_height", 0.5)
+            plateau_size = self.find_peaks_kwargs.get("plateau_size", None)
+            
             peak_indices, _ = find_peaks(
                 char_counts,
-                prominence=self.prominence,
-                distance=self.distance,
-                **self.find_peaks_kwargs,  # Pass any extra arguments
+                height=height,
+                threshold=threshold,
+                distance=distance,
+                prominence=prominence,
+                width=width,
+                wlen=wlen,
+                rel_height=rel_height,
+                plateau_size=plateau_size,
             )
 
             # Select the ProcessedFrame objects corresponding to the detected peak indices

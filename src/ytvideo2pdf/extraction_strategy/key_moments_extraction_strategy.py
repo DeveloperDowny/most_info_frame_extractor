@@ -8,9 +8,9 @@ from ytvideo2pdf.utils.processed_frame import ProcessedFrame
 
 
 class KeyMomentsExtractionStrategy(BaseExtractionStrategy):
-    def __init__(self):
-        self.video_url = None
-        self.frame_rate = None
+    def __init__(self, video_url: str = None, frame_rate: int = None, **kwargs):
+        self.video_url = video_url
+        self.frame_rate = frame_rate
 
     def extract_frames(self, frames: List[ProcessedFrame]) -> List[ProcessedFrame]:
         key_moments = Helper.get_key_moments(self.video_url)

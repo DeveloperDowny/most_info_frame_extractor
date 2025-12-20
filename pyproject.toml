@@ -26,7 +26,8 @@ dependencies = [
     "pytubefix",
     "sanitize-filename",
     "scipy",
-    "tqdm"
+    "tqdm",
+    "typer[all]"
 ]
 
 [project.optional-dependencies]

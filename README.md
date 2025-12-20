@@ -14,11 +14,21 @@ See sample PDF: \
 https://drive.google.com/drive/folders/1XOIjQs7dnYCBK1dg3ZzK8PPhx09H58-f?usp=drive_link
 
 ## Quick start
-1. Install the package
-    - `pip install video2pdf`
-2. Run the  CLI to get PDF notes
-   - `video2pdf --input=youtube --url="https://youtu.be/Z_MLrbI1s2E?si=ZrVBfIa0apzkuUKD"`
 
+0. Tesseract OCR must be installed on your system for text detection to work.
+   - For Windows, download the installer from [here](https://sourceforge.net/projects/tesseract-ocr.mirror/) and follow the installation instructions.
+   - For macOS, you can install it using Homebrew:
+     ```bash
+     brew install tesseract
+     ```
+   - For Linux (Debian/Ubuntu), use the following command:
+     ```bash
+      sudo apt-get install tesseract-ocr
+     ```
+1. Install the package
+   - `pip install ytvideo2pdf`
+2. Run the CLI to get PDF notes
+   - `ytvideo2pdf --input=youtube --url="https://youtu.be/Z_MLrbI1s2E?si=ZrVBfIa0apzkuUKD"`
 
 ### 📚 Perfect For:
 

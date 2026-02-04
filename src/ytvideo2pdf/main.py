@@ -88,7 +88,7 @@ def main(
     ),
     cleanup: bool = typer.Option(
         True,
-        "--cleanup",
+        "--cleanup/--no-cleanup",
         help="Cleanup intermediate files after processing.",
     ),
     threshold: Optional[int] = typer.Option(

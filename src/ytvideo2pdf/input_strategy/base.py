@@ -116,7 +116,7 @@ class BaseInputStrategy(ABC):
         logger.info(f"Saved PDF to {pdf_path!r} for video {video_name!r}")
 
         # ---- Copy PDF to output path
-        pdf_output_path = Helper.get_pdf_output_path(video_name)
+        pdf_output_path = Helper.get_pdf_output_path(video_name, self.internal_id)
         pdf_output_path.parent.mkdir(exist_ok=True, parents=True)
         shutil.copy(str(pdf_path), str(pdf_output_path))
         logger.info(

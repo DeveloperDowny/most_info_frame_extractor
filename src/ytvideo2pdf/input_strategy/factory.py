@@ -43,7 +43,6 @@ class InputStrategyFactory:
                 directory,
                 ocr_strategy,
                 extraction_strategy,
-                ocr_approval_strategy,
                 cache_frames=cache_frames,
                 skip_plot=skip_plot,
                 metadata=metadata

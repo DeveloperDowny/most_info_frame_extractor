@@ -15,8 +15,10 @@ from sanitize_filename import sanitize
 
 from ytvideo2pdf.utils.constants import BASE_DIR
 from ytvideo2pdf.utils.directory_manager import DirectoryManager
+import json
 
-RESOLUTION_PRIORITY = [ "720p", "480p", "360p"]
+
+RESOLUTION_PRIORITY = ["720p", "480p", "360p"]
 
 
 class Helper:
@@ -244,3 +246,10 @@ class Helper:
         except IndexError:
             raise ValueError("Invalid video name")
         return video.video_id
+
+    @staticmethod
+    def save_json(data, json_file_path):
+        """Save data to json file"""
+
+        with open(json_file_path, "w") as f:
+            json.dump(data, f, indent=4)

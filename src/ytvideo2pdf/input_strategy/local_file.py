@@ -25,9 +25,11 @@ class LocalFileInput(BaseInputStrategy):
         extraction_strategy: BaseExtractionStrategy,
         ocr_approval_strategy: OCRApprovalStrategy,
         interval: int = 3,
+        cache_frames: bool = False,
+        skip_plot: bool = True,
         **kwargs,
     ):
-        super().__init__()
+        super().__init__(cache_frames=cache_frames, skip_plot=skip_plot)
         self.directory = os.path.join(BASE_DIR, directory)
         self.ocr_strategy = ocr_strategy
         self.extraction_strategy = extraction_strategy

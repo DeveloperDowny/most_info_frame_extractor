@@ -4,17 +4,8 @@ import sys
 from typing import List, Optional
 
 import typer
-
-from ytvideo2pdf.enums import OCRApprovalType
-from ytvideo2pdf.extraction_strategy.extraction_strategy_factory import (
-    ExtractionStrategyFactory,
-)
-from ytvideo2pdf.input_strategy.base import BaseInputStrategy
-from ytvideo2pdf.input_strategy.factory import InputStrategyFactory
-from ytvideo2pdf.ocr_approval.factory import OCRApprovalStrategyFactory
-from ytvideo2pdf.ocr_strategy.ocr_strategy_factory import OCRStrategyFactory
+from ytvideo2pdf.enums import ExtractionType, OCRApprovalType, OCRType
 from ytvideo2pdf.utils.directory_manager import DirectoryManager
-from ytvideo2pdf.utils.helper import Helper
 
 
 # Create the logger
@@ -66,13 +57,13 @@ def main(
         "--ocr_approval",
         help="Specify the OCR approval strategy.",
     ),
-    ocr: str = typer.Option(
-        "tesseract",
+    ocr: OCRType = typer.Option(
+        OCRType.TESSERACT,
         "--ocr",
         help="Specify the OCR strategy.",
     ),
-    extraction: str = typer.Option(
-        "prominent_peaks",
+    extraction: ExtractionType = typer.Option(
+        ExtractionType.PROMINENT_PEAKS,
         "--extraction",
         help="Specify the extraction strategy.",
     ),
@@ -96,7 +87,26 @@ def main(
         "--threshold",
         help="Threshold for rate change extraction strategy.",
     ),
+    cache_frames: bool = typer.Option(
+        False,
+        "--cache-frames/--no-cache-frames",
+        help="Cache extracted frames to disk.",
+    ),
+    skip_plot: bool = typer.Option(
+        True,
+        "--skip-plot/--no-skip-plot",
+        help="Skip plotting the OCR text length signal.",
+    ),
 ):
+    from ytvideo2pdf.extraction_strategy.extraction_strategy_factory import (
+        ExtractionStrategyFactory,
+    )
+    from ytvideo2pdf.input_strategy.base import BaseInputStrategy
+    from ytvideo2pdf.input_strategy.factory import InputStrategyFactory
+    from ytvideo2pdf.ocr_approval.factory import OCRApprovalStrategyFactory
+    from ytvideo2pdf.ocr_strategy.ocr_strategy_factory import OCRStrategyFactory
+    from ytvideo2pdf.utils.helper import Helper
+
     # ---- check all attributes and see if they are instance of typer option, if they are set to None
     if isinstance(input, typer.models.OptionInfo):
         input = None
@@ -105,11 +115,11 @@ def main(
     if isinstance(dir, typer.models.OptionInfo):
         dir = None
     if isinstance(ocr_approval, typer.models.OptionInfo):
-        ocr_approval = "phash"
+        ocr_approval = OCRApprovalType.PHASH
     if isinstance(ocr, typer.models.OptionInfo):
-        ocr = "tesseract"
+        ocr = OCRType.TESSERACT
     if isinstance(extraction, typer.models.OptionInfo):
-        extraction = "prominent_peaks"
+        extraction = ExtractionType.PROMINENT_PEAKS
     if isinstance(k, typer.models.OptionInfo):
         k = None
     if isinstance(timestamps, typer.models.OptionInfo):
@@ -118,7 +128,10 @@ def main(
         cleanup = True
     if isinstance(threshold, typer.models.OptionInfo):
         threshold = None
-
+    if isinstance(cache_frames, typer.models.OptionInfo):
+        cache_frames = False
+    if isinstance(skip_plot, typer.models.OptionInfo):
+        skip_plot = True
     Helper.setup()
 
     ocr_approval_strategy = OCRApprovalStrategyFactory.create_strategy(ocr_approval)
@@ -146,6 +159,19 @@ def main(
     if parsed_timestamps:
         extraction_strategy.timestamps = parsed_timestamps
 
+    logger.info(f"Input type: {input}")
+    logger.info(f"Video URL: {url}")
+    logger.info(f"Local directory: {dir}")
+    logger.info(f"OCR approval strategy: {ocr_approval}")
+    logger.info(f"OCR strategy: {ocr}")
+    logger.info(f"Extraction strategy: {extraction}")
+    logger.info(f"Number of key frames to extract (k): {k}")
+    logger.info(f"Key frame timestamps: {parsed_timestamps}")
+    logger.info(f"Threshold: {threshold}")
+    logger.info(f"Cache frames: {cache_frames}")
+    logger.info(f"Skip plot: {skip_plot}")
+    logger.info(f"Cleanup: {cleanup}")
+    
     input_strategy: BaseInputStrategy = InputStrategyFactory.create_input_strategy(
         input,
         ocr_strategy,
@@ -153,6 +179,8 @@ def main(
         ocr_approval_strategy,
         url,
         dir,
+        cache_frames,
+        skip_plot,
     )
 
     directory = input_strategy.process()

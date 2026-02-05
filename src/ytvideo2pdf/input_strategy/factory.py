@@ -7,23 +7,42 @@ from ytvideo2pdf.input_strategy.youtube import YouTubeInput
 class InputStrategyFactory:
     @staticmethod
     def create_input_strategy(
-            input_type,
-            ocr_strategy,
-            extraction_strategy,
-            ocr_approval_strategy,
-            url=None,
-            directory=None,
+        input_type,
+        ocr_strategy,
+        extraction_strategy,
+        ocr_approval_strategy,
+        url=None,
+        directory=None,
+        cache_frames=False,
+        skip_plot=True,
     ) -> BaseInputStrategy:
         if input_type == "youtube":
             return YouTubeInput(
-                url, ocr_strategy, extraction_strategy, ocr_approval_strategy
+                url,
+                ocr_strategy,
+                extraction_strategy,
+                ocr_approval_strategy,
+                cache_frames=cache_frames,
+                skip_plot=skip_plot,
             )
         elif input_type == "local":
             return LocalFileInput(
-                directory, ocr_strategy, extraction_strategy, ocr_approval_strategy
+                directory,
+                ocr_strategy,
+                extraction_strategy,
+                ocr_approval_strategy,
+                cache_frames=cache_frames,
+                skip_plot=skip_plot,
             )
         elif input_type == "pickle":
             """The directory path should be like this `xxxxxx_python_object`"""
-            return PickleInput(directory, ocr_strategy, extraction_strategy)
+            return PickleInput(
+                directory,
+                ocr_strategy,
+                extraction_strategy,
+                ocr_approval_strategy,
+                cache_frames=cache_frames,
+                skip_plot=skip_plot,
+            )
         else:
             raise ValueError("Invalid input type")

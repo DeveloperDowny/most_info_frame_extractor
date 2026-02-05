@@ -17,6 +17,20 @@ from ytvideo2pdf.utils.random_generator import RandomGenerator
 
 
 class PickleInput(BaseInputStrategy):
+    def __init__(
+        self,
+        directory: str,
+        ocr_strategy: OCRStrategy,
+        extraction_strategy: BaseExtractionStrategy,
+        cache_frames: bool = False,
+        skip_plot: bool = True,
+        **kwargs,
+    ):
+        super().__init__(cache_frames=cache_frames, skip_plot=skip_plot)
+        self.directory = os.path.join(BASE_DIR, directory)
+        self.ocr_strategy = ocr_strategy
+        self.extraction_strategy = extraction_strategy
+
     def get_video_path(self):
         video_path_file_path = os.path.join(self.directory, "video_path.txt")
         video_path = Helper.load_text(video_path_file_path)
@@ -37,14 +51,3 @@ class PickleInput(BaseInputStrategy):
     def configure_extraction_strategy(self):
         if isinstance(self.extraction_strategy, TimestampExtractionStrategy):
             self.extraction_strategy.frame_rate = Helper.get_frame_rate(self.video_path)
-
-    def __init__(
-            self,
-            directory: str,
-            ocr_strategy: OCRStrategy,
-            extraction_strategy: BaseExtractionStrategy,
-    ):
-        super().__init__()
-        self.directory = os.path.join(BASE_DIR, directory)
-        self.ocr_strategy = ocr_strategy
-        self.extraction_strategy = extraction_strategy

@@ -5,11 +5,13 @@ from datetime import datetime
 import shutil
 from typing import List, Optional
 
+from ytvideo2pdf.extraction_strategy.base_extraction_strategy import BaseExtractionStrategy
 from ytvideo2pdf.utils.data_plotter import DataPlotter
 from ytvideo2pdf.utils.directory_manager import DirectoryManager
 from ytvideo2pdf.utils.helper import Helper
 from ytvideo2pdf.utils.post_processor import PostProcessor
 from ytvideo2pdf.utils.processed_frame import ProcessedFrame
+from ytvideo2pdf.utils.video_processor import VideoProcessor
 
 timestamp = datetime.now().strftime("%Y%m%d-%H%M%S")
 
@@ -17,10 +19,10 @@ logger = logging.getLogger()
 
 
 class BaseInputStrategy(ABC):
-    def __init__(self):
-        self.cache_frames = False
-        self.skip_plot = True
-        self.extraction_strategy = None
+    def __init__(self, cache_frames: bool = False, skip_plot: bool = True):
+        self.cache_frames = cache_frames
+        self.skip_plot = skip_plot
+        self.extraction_strategy: BaseExtractionStrategy = None
         self.internal_id = None
         self.video_path = None
         self.metadata = {}
@@ -46,17 +48,20 @@ class BaseInputStrategy(ABC):
         frames = self.get_frames()
         logger.info(f"Number of frames: {len(frames)!r}")
 
+        logger.info(f"Cache frames: {self.cache_frames!r}, Skip plot: {self.skip_plot!r}")
         # ---- Cache frames
         if self.cache_frames:
             logger.info(f"Caching frames...")
             cache_dir = self.cache_frames_(frames)
             logger.info(f"Caching frames to {cache_dir!r}")
+            self.metadata["cached_frames_directory"] = cache_dir
 
         if not self.skip_plot:
             # ---- Plot graph
             logger.info(f"Plotting signal of varying ocr text length...")
             plot_path = self.plot_graph(frames)
             logger.info(f"Plot path: {plot_path!r}")
+            self.metadata["plot_path"] = plot_path
 
         # ---- Configuring extraction_strategy
         self.configure_extraction_strategy()
@@ -65,6 +70,17 @@ class BaseInputStrategy(ABC):
         logger.info(f"Extracting frames...")
         extracted_frames = self.extract_frames(frames)
         logger.info(f"Number of extracted frames: {len(extracted_frames)!r}")
+        self.metadata["total_frames"] = len(frames)
+        self.metadata["total_extracted_frames"] = len(extracted_frames)
+        self.metadata["extracted_frame_numbers"] = [
+            frame.frame_number for frame in extracted_frames
+        ]
+        fps = VideoProcessor.get_frame_rate(self.video_path)
+        frame_timestamps = [
+            VideoProcessor.get_timestamp_from_frame_number(fps, frame.frame_number)
+            for frame in extracted_frames
+        ]
+        self.metadata["extracted_frame_timestamps"] = frame_timestamps
 
         if not self.skip_plot:
             # ---- Plotting key frames
@@ -76,6 +92,7 @@ class BaseInputStrategy(ABC):
         logger.info(f"Saving extracted frames...")
         output_dir = self.save_frames(extracted_frames)
         logger.info(f"Extracted frames directory: {output_dir!r}")
+        self.metadata["extracted_frames_directory"] = output_dir
 
         # ---- Post processing
         logger.info(f"Post processing...")
@@ -86,10 +103,11 @@ class BaseInputStrategy(ABC):
         logger.info(f"Creating PDF...")
         pdf_path = self.create_pdf(output_dir)
         logger.info(f"PDF path: {pdf_path!r}")
-
+        self.metadata["output_pdf_path"] = pdf_path
         # ---- Save video_path to output_pdf_path mapping
         logger.info(f"PDF for video {self.video_path!r}: {pdf_path!r}")
         video_name = Helper.get_video_name(self.video_path)
+        self.metadata["video_name"] = video_name
         logger.info(f"Saved PDF to {pdf_path!r} for video {video_name!r}")
 
         # ---- Copy PDF to output path
@@ -98,6 +116,13 @@ class BaseInputStrategy(ABC):
         shutil.copy(str(pdf_path), str(pdf_output_path))
         logger.info(
             f"Result PDF for video {video_name!r} saved at {str(pdf_output_path)}"
+        )
+
+        # ---- save metadata
+        metadata_output_path = pdf_output_path.with_suffix(".json")
+        Helper.save_json(self.metadata, metadata_output_path)
+        logger.info(
+            f"Metadata for video {video_name!r} saved at {str(metadata_output_path)}"
         )
 
         return self.internal_id

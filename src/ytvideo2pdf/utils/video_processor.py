@@ -43,13 +43,17 @@ class VideoProcessor:
             import gc
 
             gc.collect()
-
+    
     @staticmethod
-    def get_timestamp_from_frame_number(video_path: str, frame_number: int) -> float:
+    def get_frame_rate(video_path: str) -> float:
         cap = cv2.VideoCapture(video_path)
         fps = cap.get(cv2.CAP_PROP_FPS)
-        timestamp = frame_number / fps
         cap.release()
+        return fps
+
+    @staticmethod
+    def get_timestamp_from_frame_number(fps: float, frame_number: int) -> float:
+        timestamp = frame_number / fps
         return timestamp
 
     @staticmethod

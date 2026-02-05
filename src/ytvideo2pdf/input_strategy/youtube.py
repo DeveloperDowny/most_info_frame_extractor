@@ -28,14 +28,17 @@ class YouTubeInput(BaseInputStrategy):
         extraction_strategy: BaseExtractionStrategy,
         ocr_approval_strategy: OCRApprovalStrategy,
         interval: int = 3,
+        cache_frames: bool = False,
+        skip_plot: bool = True,
         **kwargs,
     ):
-        super().__init__()
+        super().__init__(cache_frames=cache_frames, skip_plot=skip_plot)
         self.video_url = video_url
         self.ocr_strategy = ocr_strategy
         self.extraction_strategy = extraction_strategy
         self.ocr_approval_strategy = ocr_approval_strategy
         self.interval = interval  # seconds
+        self.metadata["video_url"] = self.video_url
 
     def configure_extraction_strategy(self):
         # TODO: Ideally, this should not be here. Check if there is a better way to do this.

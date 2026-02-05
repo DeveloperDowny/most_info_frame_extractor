@@ -14,3 +14,9 @@ class ExtractionType(StrEnum):
     TIMESTAMPS = "timestamps"
     PROMINENT_PEAKS = "prominent_peaks"
     RATE_CHANGE_THRESHOLD = "rate_change_threshold"
+
+
+class OCRType(StrEnum):
+    TESSERACT = "tesseract"
+    EASY_OCR = "easy_ocr"
+    COMBINED = "paddleocr"

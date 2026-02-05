@@ -80,7 +80,12 @@ class BaseInputStrategy(ABC):
             VideoProcessor.get_timestamp_from_frame_number(fps, frame.frame_number)
             for frame in extracted_frames
         ]
+        formatted_frame_timestamps = [
+            VideoProcessor.get_formatted_time(timestamp)
+            for timestamp in frame_timestamps
+        ]
         self.metadata["extracted_frame_timestamps"] = frame_timestamps
+        self.metadata["extracted_frame_formatted_timestamps"] = formatted_frame_timestamps
 
         if not self.skip_plot:
             # ---- Plotting key frames

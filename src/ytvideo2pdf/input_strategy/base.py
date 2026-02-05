@@ -19,13 +19,13 @@ logger = logging.getLogger()
 
 
 class BaseInputStrategy(ABC):
-    def __init__(self, cache_frames: bool = False, skip_plot: bool = True):
+    def __init__(self, cache_frames: bool = False, skip_plot: bool = True, metadata=dict()):
         self.cache_frames = cache_frames
         self.skip_plot = skip_plot
         self.extraction_strategy: BaseExtractionStrategy = None
         self.internal_id = None
         self.video_path = None
-        self.metadata = {}
+        self.metadata = metadata
 
     def process(self):
         # ---- Create internal_id

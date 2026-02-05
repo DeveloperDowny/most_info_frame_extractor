@@ -172,6 +172,21 @@ def main(
     logger.info(f"Skip plot: {skip_plot}")
     logger.info(f"Cleanup: {cleanup}")
     
+    metadata = {
+        "input_type": input,
+        "video_url": url,
+        "local_directory": dir,
+        "ocr_approval_strategy": ocr_approval.value,
+        "ocr_strategy": ocr.value,
+        "extraction_strategy": extraction.value,
+        "k": k,
+        "timestamps": parsed_timestamps,
+        "threshold": threshold,
+        "cache_frames": cache_frames,
+        "skip_plot": skip_plot,
+        "cleanup": cleanup,
+    }
+    
     input_strategy: BaseInputStrategy = InputStrategyFactory.create_input_strategy(
         input,
         ocr_strategy,
@@ -181,6 +196,7 @@ def main(
         dir,
         cache_frames,
         skip_plot,
+        metadata
     )
 
     directory = input_strategy.process()

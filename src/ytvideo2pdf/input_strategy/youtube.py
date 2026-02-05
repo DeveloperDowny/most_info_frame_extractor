@@ -30,9 +30,10 @@ class YouTubeInput(BaseInputStrategy):
         interval: int = 3,
         cache_frames: bool = False,
         skip_plot: bool = True,
+        metadata=dict(),
         **kwargs,
     ):
-        super().__init__(cache_frames=cache_frames, skip_plot=skip_plot)
+        super().__init__(cache_frames=cache_frames, skip_plot=skip_plot, metadata=metadata)
         self.video_url = video_url
         self.ocr_strategy = ocr_strategy
         self.extraction_strategy = extraction_strategy

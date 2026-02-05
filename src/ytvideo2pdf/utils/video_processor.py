@@ -52,9 +52,9 @@ class VideoProcessor:
         return fps
 
     @staticmethod
-    def get_timestamp_from_frame_number(fps: float, frame_number: int) -> float:
+    def get_timestamp_from_frame_number(fps: float, frame_number: int) -> int:
         timestamp = frame_number / fps
-        return timestamp
+        return int(timestamp)
 
     @staticmethod
     def get_formatted_time(seconds: int) -> str:

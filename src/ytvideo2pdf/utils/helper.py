@@ -227,8 +227,6 @@ class Helper:
     def get_pdf_output_path(video_name: str, internal_id: str, output_dir: str = "output") -> Path:
         """Give output pdf path from video name and internal id"""
         video_name_path = Path(video_name)
-        new_video_name =  video_name_path.stem + "_" + internal_id
-        video_name_path = video_name_path.with_name(new_video_name)
         output_dir = Path.cwd().joinpath(output_dir).resolve()
         output_path = output_dir / video_name_path.with_suffix(".pdf")
         return output_path

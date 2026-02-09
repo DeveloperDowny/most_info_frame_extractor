@@ -1,56 +1,78 @@
-# 🎬 Glimpsify: Extract PPT Slides from any Educational Video
+# Glimpsify (ytvideo2pdf)
 
-**A Video-to-PDF Frame Extraction Tool**
-
-❌ Watch an entire 34 minutes long lecture video on YouTube? Naah 👎 \
-✅ Get PDF notes of screenshots of important parts of the video instead? Hell yessss! 👌
-
-That's what Glimpsify does! 💻
-
-You pass it YouTube link 🔗 of the lecture video 🎥 and it gives you the PDF notes 📑 of the key parts of the video.
-Yes with all the visuals - diagrams, charts, formulas - which no summarizer in the market gives!
-
-See sample PDF: \
-https://drive.google.com/drive/folders/1XOIjQs7dnYCBK1dg3ZzK8PPhx09H58-f?usp=drive_link
+Glimpsify extracts slide-like frames from educational videos and builds a PDF of the key visuals (diagrams, formulas, charts). It is optimized for lecture-style videos where text appears on screen over time.
 
 ## Quick start
 
-0. Tesseract OCR must be installed on your system for text detection to work.
-   - For Windows, download the installer from [here](https://sourceforge.net/projects/tesseract-ocr.mirror/) and follow the installation instructions.
-   - For macOS, you can install it using Homebrew:
-     ```bash
-     brew install tesseract
-     ```
-   - For Linux (Debian/Ubuntu), use the following command:
-     ```bash
-      sudo apt-get install tesseract-ocr
-     ```
-1. Install the package
-   - `pip install ytvideo2pdf`
-2. Run the CLI to get PDF notes
-   - `ytvideo2pdf --input=youtube --url="https://youtu.be/Z_MLrbI1s2E?si=ZrVBfIa0apzkuUKD"`
+1. Install OCR engine (required for text detection)
+   - Windows: install Tesseract OCR and make sure `tesseract` is on PATH.
+   - macOS: `brew install tesseract`
+   - Debian/Ubuntu: `sudo apt-get install tesseract-ocr`
 
-### 📚 Perfect For:
+2. Install the package
 
-- **Students**: Creating last-minute revision PDFs from lecture videos
-- **Educators**: Extracting slide content from recorded presentations
-- **Researchers**: Analyzing visual content in educational materials
-- **Professionals**: Converting training videos to reference documents
-- **Content Creators**: Generating thumbnails and key moments
+```bash
+pip install ytvideo2pdf
+```
 
-## LinkedIn Posts
+3. Run the CLI
 
-I actively post on LinkedIn about my project. You can find link to the posts here:
+```bash
+ytvideo2pdf --input=youtube --url="https://youtu.be/Z_MLrbI1s2E"
+```
 
-- https://www.linkedin.com/posts/vedantpanchal_neso-academy-never-provides-their-ppts-activity-7254912964451811328-0a7H
-- https://www.linkedin.com/posts/vedantpanchal_edtech-youtubesummarization-glimpsify-activity-7301972904718528512-LGoy
+## Common usage
 
-## Extracting Most Information Frame
+Extract from a local folder (expects a single video file in the directory):
 
-Pass a YouTube Video link and get the screenshots of the frame which has the most information content (like if someone is explaining with the help of a PPT, capture screenshot when all the text of one slide of PPT has animated in)
+```bash
+ytvideo2pdf --input=local --dir="C:\path\to\video_dir"
+```
 
-Frame with most information it can possibly have
-![image](https://github.com/DeveloperDowny/most_info_frame_extractor/assets/60831483/854332d4-5d59-4f11-aeff-e0fa0c8e1fcd)
+Run with a specific extraction strategy:
 
-This frame can have more information and thus not the most information frame
-![image](https://github.com/DeveloperDowny/most_info_frame_extractor/assets/60831483/35eed63d-e490-441a-ab65-06ad336cb8aa)
+```bash
+ytvideo2pdf --input=youtube --url="https://youtu.be/Z_MLrbI1s2E" --extraction=prominent_peaks
+```
+
+Extract a fixed number of frames:
+
+```bash
+ytvideo2pdf --input=youtube --url="https://youtu.be/Z_MLrbI1s2E" --k=10
+```
+
+Extract frames at explicit timestamps (seconds):
+
+```bash
+ytvideo2pdf --input=youtube --url="https://youtu.be/Z_MLrbI1s2E" --extraction=timestamps --timestamps="30, 95.5, 120"
+```
+
+## What you get
+
+- A PDF file in `output/` with the extracted frames.
+- A JSON metadata file alongside the PDF (same name, `.json`).
+- Intermediate folders (unless `--no-cleanup`) for extracted frames and cached objects.
+
+## Key features
+
+- Multiple extraction strategies to pick the most informative frames.
+- OCR-based signal processing (Tesseract by default).
+- Optional caching of processed frames for reuse.
+- Optional plots of the OCR signal (for debugging and tuning).
+
+## CLI options (summary)
+
+- `--input`: `youtube | local | pickle`
+- `--url`: YouTube video or playlist URL (for `youtube` input)
+- `--dir`: local directory path (for `local` or `pickle` input)
+- `--ocr`: `tesseract | easy_ocr | paddleocr`
+- `--ocr_approval`: `phash | pixel_comparison | approve_all | reject_all`
+- `--extraction`: `prominent_peaks | k_transactions | key_moments | timestamps | rate_change_threshold`
+- `--k`: number of frames to extract, or `auto`
+- `--timestamps`: comma-separated seconds (for `timestamps` extraction)
+- `--threshold`: integer threshold for `rate_change_threshold`
+- `--cache-frames/--no-cache-frames`
+- `--skip-plot/--no-skip-plot`
+- `--cleanup/--no-cleanup`
+
+For Python API usage, see `LIBRARY.md`.

@@ -2,6 +2,9 @@
 
 Glimpsify extracts slide-like frames from educational videos and builds a PDF of the key visuals (diagrams, formulas, charts). It is optimized for lecture-style videos where text appears on screen over time.
 
+## Demo
+Try it out here: https://colab.research.google.com/drive/1xz6uHeY0QAzMTR8DbXJY8BSvNmKhI24Q?usp=sharing
+
 ## Quick start
 
 1. Install OCR engine (required for text detection)

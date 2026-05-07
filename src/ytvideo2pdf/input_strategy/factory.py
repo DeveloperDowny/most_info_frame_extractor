@@ -16,6 +16,7 @@ class InputStrategyFactory:
         cache_frames=False,
         skip_plot=True,
         metadata=dict(),
+        interval: int =3
     ) -> BaseInputStrategy:
         if input_type == "youtube":
             return YouTubeInput(
@@ -25,7 +26,8 @@ class InputStrategyFactory:
                 ocr_approval_strategy,
                 cache_frames=cache_frames,
                 skip_plot=skip_plot,
-                metadata=metadata
+                metadata=metadata,
+                interval=interval,
             )
         elif input_type == "local":
             return LocalFileInput(
@@ -35,7 +37,8 @@ class InputStrategyFactory:
                 ocr_approval_strategy,
                 cache_frames=cache_frames,
                 skip_plot=skip_plot,
-                metadata=metadata
+                metadata=metadata,
+                interval=interval,
             )
         elif input_type == "pickle":
             """The directory path should be like this `xxxxxx_python_object`"""
@@ -45,7 +48,7 @@ class InputStrategyFactory:
                 extraction_strategy,
                 cache_frames=cache_frames,
                 skip_plot=skip_plot,
-                metadata=metadata
+                metadata=metadata,
             )
         else:
             raise ValueError("Invalid input type")

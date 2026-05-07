@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "ytvideo2pdf"
-version = "0.0.19"
+version = "0.1.0"
 authors = [{ name = "Vedant Panchal", email = "vedantpanchal12345@gmail.com" }]
 description = "Convert YouTube educational video to crisp PDF notes"
 readme = "README.md"
@@ -27,7 +27,7 @@ dependencies = [
     "sanitize-filename",
     "scipy",
     "tqdm",
-    "typer[all]",
+    "typer",
 ]
 
 [project.optional-dependencies]

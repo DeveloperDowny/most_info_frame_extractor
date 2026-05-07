@@ -52,6 +52,11 @@ def main(
         "--dir",
         help="Specify the local directory if input type is 'local'.",
     ),
+    interval: int = typer.Option(
+        3,
+        "--interval",
+        help="Specify the interval in seconds for frame extraction.",
+    ),
     ocr_approval: OCRApprovalType = typer.Option(
         OCRApprovalType.PHASH,
         "--ocr_approval",
@@ -114,6 +119,8 @@ def main(
         url = None
     if isinstance(dir, typer.models.OptionInfo):
         dir = None
+    if isinstance(interval, typer.models.OptionInfo):
+        interval = 3
     if isinstance(ocr_approval, typer.models.OptionInfo):
         ocr_approval = OCRApprovalType.PHASH
     if isinstance(ocr, typer.models.OptionInfo):
@@ -132,6 +139,8 @@ def main(
         cache_frames = False
     if isinstance(skip_plot, typer.models.OptionInfo):
         skip_plot = True
+    if isinstance(interval, typer.models.OptionInfo):
+        interval = 3
     Helper.setup()
 
     ocr_approval_strategy = OCRApprovalStrategyFactory.create_strategy(ocr_approval)
@@ -162,6 +171,7 @@ def main(
     logger.info(f"Input type: {input}")
     logger.info(f"Video URL: {url}")
     logger.info(f"Local directory: {dir}")
+    logger.info(f"Interval: {interval} seconds")
     logger.info(f"OCR approval strategy: {ocr_approval}")
     logger.info(f"OCR strategy: {ocr}")
     logger.info(f"Extraction strategy: {extraction}")
@@ -176,6 +186,7 @@ def main(
         "input_type": input,
         "video_url": url,
         "local_directory": dir,
+        "interval": interval,
         "ocr_approval_strategy": ocr_approval.value,
         "ocr_strategy": ocr.value,
         "extraction_strategy": extraction.value,
@@ -196,7 +207,8 @@ def main(
         dir,
         cache_frames,
         skip_plot,
-        metadata
+        metadata,
+        interval=interval
     )
 
     directory = input_strategy.process()

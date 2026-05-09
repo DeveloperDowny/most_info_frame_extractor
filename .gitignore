@@ -32,3 +32,6 @@ metrics
 duplicate
 
 dist
+.vscode
+Run.bat
+script.py

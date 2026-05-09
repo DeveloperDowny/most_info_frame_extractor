@@ -5,7 +5,7 @@ from math import ceil
 from pathlib import Path
 from typing import List
 
-import cv2
+from decord import VideoReader
 import pandas as pd
 from PIL import Image
 from pytubefix import Playlist, Search
@@ -57,29 +57,29 @@ class Helper:
 
     @staticmethod
     def save_image(frame_output_path, frame_number, video_path):
-        cap = cv2.VideoCapture(video_path)
-        cap.set(cv2.CAP_PROP_POS_FRAMES, frame_number)
-        ret, frame = cap.read()
-        cv2.imwrite(frame_output_path, frame)
-        cap.release()
-        cv2.destroyAllWindows()
+        video_reader = VideoReader(video_path)
+        if frame_number < 0 or frame_number >= len(video_reader):
+            return
+        frame_rgb = video_reader[frame_number].asnumpy()
+        Image.fromarray(frame_rgb).save(frame_output_path)
 
     @staticmethod
     def save_extracted_frames(extracted_frames, video_path, extracted_frames_directory):
         """For all timestamps, reads the corresponding frame of the video and saves it to the dir"""
-        cap = cv2.VideoCapture(video_path)
-        for frame_info in extracted_frames:
+        frame_numbers = {frame_info.frame_number for frame_info in extracted_frames}
+        if not frame_numbers:
+            return
+
+        video_reader = VideoReader(video_path)
+        for frame_number in sorted(frame_numbers):
+            if frame_number < 0 or frame_number >= len(video_reader):
+                continue
             frame_output_path = os.path.join(
-                extracted_frames_directory, f"frame_{frame_info.frame_number}.jpg"
+                extracted_frames_directory, f"frame_{frame_number}.jpg"
             )
-            cap.set(cv2.CAP_PROP_POS_FRAMES, frame_info.frame_number)
-            ret, frame = cap.read()
-            if ret and frame is not None:
-                # Convert OpenCV image (BGR) to PIL image (RGB)
-                frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-                pil_img = Image.fromarray(frame_rgb)
-                pil_img.save(frame_output_path, dpi=(300, 300))  # Save with proper DPI
-        cap.release()
+            frame_rgb = video_reader[frame_number].asnumpy()
+            pil_img = Image.fromarray(frame_rgb)
+            pil_img.save(frame_output_path, dpi=(300, 300))
 
     @staticmethod
     def clean_text(text: str) -> str:
@@ -224,7 +224,9 @@ class Helper:
         return video_name
 
     @staticmethod
-    def get_pdf_output_path(video_name: str, internal_id: str, output_dir: str = "output") -> Path:
+    def get_pdf_output_path(
+        video_name: str, internal_id: str, output_dir: str = "output"
+    ) -> Path:
         """Give output pdf path from video name and internal id"""
         video_name_path = Path(video_name)
         output_dir = Path.cwd().joinpath(output_dir).resolve()
@@ -234,11 +236,8 @@ class Helper:
     @staticmethod
     def get_frame_rate(video_path):
         """Give video frame rate from video_path"""
-        cap = cv2.VideoCapture(video_path)
-        frame_rate = cap.get(cv2.CAP_PROP_FPS)
-        cap.release()
-        cv2.destroyAllWindows()
-        return frame_rate
+        video_reader = VideoReader(video_path)
+        return float(video_reader.get_avg_fps() or 0.0)
 
     @staticmethod
     def get_video_id(video_name: str):

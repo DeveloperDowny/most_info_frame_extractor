@@ -1,55 +1,40 @@
 from typing import Iterator
 
-import cv2
+from decord import VideoReader
+
 from ytvideo2pdf.utils.frame import Frame
 
 
 class VideoProcessor:
     @staticmethod
     def get_total_frames(video_path: str, interval: int = 3) -> int:
-        cap = cv2.VideoCapture(video_path)
-        fps = cap.get(cv2.CAP_PROP_FPS)
-        total_frame_count = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
-        cap.release()
+        video_reader = VideoReader(video_path)
+        fps = video_reader.get_avg_fps()
+        total_frame_count = len(video_reader)
 
-        frame_interval = int(fps * interval)
+        frame_interval = int(fps * interval) if fps else 1
+        if total_frame_count <= 0 or frame_interval <= 0:
+            return 0
         # Calculate how many frames match the interval
         return (total_frame_count + frame_interval - 1) // frame_interval
 
     @staticmethod
     def get_frames(video_path: str, interval: int) -> Iterator[Frame]:
-        cap = cv2.VideoCapture(video_path)
-        fps = cap.get(cv2.CAP_PROP_FPS)
-        frame_interval = int(fps * interval)
+        video_reader = VideoReader(video_path)
+        fps = video_reader.get_avg_fps()
+        frame_interval = int(fps * interval) if fps else 1
+        if frame_interval <= 0:
+            frame_interval = 1
 
-        try:
-            frame_number = 0
-            while cap.isOpened():
-                ret, frame = cap.read()
-                if not ret:
-                    break
+        for frame_number in range(0, len(video_reader), frame_interval):
+            frame_rgb = video_reader[frame_number].asnumpy()
+            frame_bgr = frame_rgb[:, :, ::-1]
+            yield Frame(frame_number, frame_bgr)
 
-                if frame_number % frame_interval == 0:
-                    # Create a copy of the frame to ensure the original buffer can be released
-                    frame_copy = frame.copy()
-                    yield Frame(frame_number, frame_copy)
-                    # Explicitly delete the copy after yielding if not needed
-                    del frame
-
-                frame_number += 1
-        finally:
-            cap.release()
-            # Call garbage collector explicitly to help clean up any remaining references
-            import gc
-
-            gc.collect()
-    
     @staticmethod
     def get_frame_rate(video_path: str) -> float:
-        cap = cv2.VideoCapture(video_path)
-        fps = cap.get(cv2.CAP_PROP_FPS)
-        cap.release()
-        return fps
+        video_reader = VideoReader(video_path)
+        return float(video_reader.get_avg_fps() or 0.0)
 
     @staticmethod
     def get_timestamp_from_frame_number(fps: float, frame_number: int) -> int:

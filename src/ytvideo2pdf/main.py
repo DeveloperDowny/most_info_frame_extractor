@@ -102,6 +102,11 @@ def main(
         "--skip-plot/--no-skip-plot",
         help="Skip plotting the OCR text length signal.",
     ),
+    res_priority: str = typer.Option(
+        "720p",
+        "--res-priority",
+        help="Preferred resolution for YouTube video download (e.g., '720p', '1080p').",
+    ),
 ):
     from ytvideo2pdf.extraction_strategy.extraction_strategy_factory import (
         ExtractionStrategyFactory,
@@ -141,6 +146,8 @@ def main(
         skip_plot = True
     if isinstance(interval, typer.models.OptionInfo):
         interval = 3
+    if isinstance(res_priority, typer.models.OptionInfo):
+        res_priority = "720p"
     Helper.setup()
 
     ocr_approval_strategy = OCRApprovalStrategyFactory.create_strategy(ocr_approval)
@@ -172,6 +179,7 @@ def main(
     logger.info(f"Video URL: {url}")
     logger.info(f"Local directory: {dir}")
     logger.info(f"Interval: {interval} seconds")
+    logger.info(f"Resolution priority: {res_priority}")
     logger.info(f"OCR approval strategy: {ocr_approval}")
     logger.info(f"OCR strategy: {ocr}")
     logger.info(f"Extraction strategy: {extraction}")
@@ -208,7 +216,8 @@ def main(
         cache_frames,
         skip_plot,
         metadata,
-        interval=interval
+        interval=interval,
+        res_priority=res_priority
     )
 
     directory = input_strategy.process()

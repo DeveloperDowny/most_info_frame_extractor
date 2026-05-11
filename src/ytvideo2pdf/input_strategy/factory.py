@@ -16,7 +16,8 @@ class InputStrategyFactory:
         cache_frames=False,
         skip_plot=True,
         metadata=dict(),
-        interval: int =3
+        interval: int =3,
+        res_priority: str = "720p"
     ) -> BaseInputStrategy:
         if input_type == "youtube":
             return YouTubeInput(
@@ -28,6 +29,7 @@ class InputStrategyFactory:
                 skip_plot=skip_plot,
                 metadata=metadata,
                 interval=interval,
+                res_priority=res_priority
             )
         elif input_type == "local":
             return LocalFileInput(

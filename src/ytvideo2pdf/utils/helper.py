@@ -18,7 +18,7 @@ from ytvideo2pdf.utils.directory_manager import DirectoryManager
 import json
 
 
-RESOLUTION_PRIORITY = ["720p", "480p", "360p"]
+RESOLUTION_PRIORITY_LIST = ["720p", "480p", "360p"]
 
 
 class Helper:
@@ -32,11 +32,26 @@ class Helper:
         return int(re.sub(r"\D", "", text))
 
     @staticmethod
+    def build_resolution_priority(res_priority: str) -> List[str]:
+        base_res_priority_list = RESOLUTION_PRIORITY_LIST.copy()
+        # ---- descending order
+        if res_priority in base_res_priority_list:
+            index = base_res_priority_list.index(res_priority)
+            if index == 0:
+                return base_res_priority_list
+            first_half = base_res_priority_list[:index]
+            second_half = base_res_priority_list[index :]
+            first_half.reverse()
+            return second_half + first_half
+        return base_res_priority_list
+
+    @staticmethod
     def download_youtube_video(
         video_url: str,
         directory: str,
-        res_priority: List[str] = RESOLUTION_PRIORITY,
+        res_priority: str = "720p",
     ) -> str:
+        res_priority = Helper.build_resolution_priority(res_priority)
         yt = YouTube(video_url, on_progress_callback=on_progress)
 
         streams = None

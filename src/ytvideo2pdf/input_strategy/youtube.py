@@ -31,15 +31,19 @@ class YouTubeInput(BaseInputStrategy):
         cache_frames: bool = False,
         skip_plot: bool = True,
         metadata=dict(),
+        res_priority: str = "720p",
         **kwargs,
     ):
-        super().__init__(cache_frames=cache_frames, skip_plot=skip_plot, metadata=metadata)
+        super().__init__(
+            cache_frames=cache_frames, skip_plot=skip_plot, metadata=metadata
+        )
         self.video_url = video_url
         self.ocr_strategy = ocr_strategy
         self.extraction_strategy = extraction_strategy
         self.ocr_approval_strategy = ocr_approval_strategy
         self.interval = interval  # seconds
         self.metadata["video_url"] = self.video_url
+        self.res_priority = res_priority
 
     def configure_extraction_strategy(self):
         # TODO: Ideally, this should not be here. Check if there is a better way to do this.
@@ -59,7 +63,7 @@ class YouTubeInput(BaseInputStrategy):
         directory = os.path.join(BASE_DIR, directory)
         DirectoryManager.create_directory(directory)
 
-        Helper.download_youtube_video(self.video_url, directory)
+        Helper.download_youtube_video(self.video_url, directory, self.res_priority)
         return directory
 
     def get_frames(self) -> List[ProcessedFrame]:

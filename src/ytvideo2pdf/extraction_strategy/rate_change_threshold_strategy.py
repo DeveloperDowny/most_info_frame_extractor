@@ -77,7 +77,8 @@ class RateChangeThresholdStrategy(BaseExtractionStrategy):
                     row["frame_number"],
                 )
             prevRow = row
-
+        selected_frame_numbers = list(set(selected_frame_numbers))
+        selected_frame_numbers.sort()
         selected_frames = [
             frame for frame in frames if frame.frame_number in selected_frame_numbers
         ]

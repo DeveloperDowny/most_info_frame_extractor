@@ -1,3 +1,4 @@
+from ytvideo2pdf.enums import InputType
 from ytvideo2pdf.input_strategy.base import BaseInputStrategy
 from ytvideo2pdf.input_strategy.local_file import LocalFileInput
 from ytvideo2pdf.input_strategy.pickle import PickleInput
@@ -16,10 +17,19 @@ class InputStrategyFactory:
         cache_frames=False,
         skip_plot=True,
         metadata=dict(),
-        interval: int =3,
-        res_priority: str = "720p"
+        interval: int = 3,
+        res_priority: str = "720p",
     ) -> BaseInputStrategy:
-        if input_type == "youtube":
+        try:
+            input_type_value = (
+                input_type
+                if isinstance(input_type, InputType)
+                else InputType(input_type)
+            )
+        except ValueError as exc:
+            raise ValueError("Invalid input type") from exc
+
+        if input_type_value == InputType.YOUTUBE:
             return YouTubeInput(
                 url,
                 ocr_strategy,
@@ -29,9 +39,9 @@ class InputStrategyFactory:
                 skip_plot=skip_plot,
                 metadata=metadata,
                 interval=interval,
-                res_priority=res_priority
+                res_priority=res_priority,
             )
-        elif input_type == "local":
+        elif input_type_value == InputType.LOCAL:
             return LocalFileInput(
                 directory,
                 ocr_strategy,
@@ -42,7 +52,7 @@ class InputStrategyFactory:
                 metadata=metadata,
                 interval=interval,
             )
-        elif input_type == "pickle":
+        elif input_type_value == InputType.PICKLE:
             """The directory path should be like this `xxxxxx_python_object`"""
             return PickleInput(
                 directory,

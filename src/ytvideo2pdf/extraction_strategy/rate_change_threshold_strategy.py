@@ -55,10 +55,29 @@ class RateChangeThresholdStrategy(BaseExtractionStrategy):
                 "char_count": item.char_count,
             }
             df = pd.concat([df, pd.DataFrame([row])], ignore_index=True)
-        df["char_count_change"] = df["char_count"].diff().abs()
-        # ---- TODO: Don't abs. Sign matters. If -ve then take one frame before. If +ve then take one frame after. ----
-        significant_changes = df[df["char_count_change"] > self.threshold]
-        selected_frame_numbers = set(significant_changes["frame_number"].tolist())
+        df["char_count_change"] = df["char_count"].diff()
+        
+        selected_frame_numbers = []
+        
+        prevRow = None
+        for _, row in df.iterrows():
+            if abs(row["char_count_change"]) < self.threshold:
+                prevRow = row
+                continue
+            
+            if row["char_count_change"] < 0:
+                if prevRow is None:
+                    prevRow = row
+                    continue
+                selected_frame_numbers.append(
+                    prevRow["frame_number"],
+                )
+            else:
+                selected_frame_numbers.append(
+                    row["frame_number"],
+                )
+            prevRow = row
+
         selected_frames = [
             frame for frame in frames if frame.frame_number in selected_frame_numbers
         ]

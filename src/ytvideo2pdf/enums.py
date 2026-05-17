@@ -20,3 +20,9 @@ class OCRType(StrEnum):
     TESSERACT = "tesseract"
     EASY_OCR = "easy_ocr"
     COMBINED = "paddleocr"
+
+
+class InputType(StrEnum):
+    YOUTUBE = "youtube"
+    LOCAL = "local"
+    PICKLE = "pickle"

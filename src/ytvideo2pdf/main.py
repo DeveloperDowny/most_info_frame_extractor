@@ -4,7 +4,7 @@ import sys
 from typing import List, Optional
 
 import typer
-from ytvideo2pdf.enums import ExtractionType, OCRApprovalType, OCRType
+from ytvideo2pdf.enums import ExtractionType, InputType, OCRApprovalType, OCRType
 from ytvideo2pdf.utils.directory_manager import DirectoryManager
 
 
@@ -37,7 +37,7 @@ def cleanup_directory(directory):
 
 @app.command()
 def main(
-    input: str = typer.Option(
+    input: InputType = typer.Option(
         ...,
         "--input",
         help="Specify the input type.",
@@ -191,9 +191,9 @@ def main(
     logger.info(f"Cache frames: {cache_frames}")
     logger.info(f"Skip plot: {skip_plot}")
     logger.info(f"Cleanup: {cleanup}")
-    
+
     metadata = {
-        "input_type": input,
+        "input_type": input.value if isinstance(input, InputType) else input,
         "video_url": url,
         "local_directory": dir,
         "interval": interval,
@@ -207,7 +207,7 @@ def main(
         "skip_plot": skip_plot,
         "cleanup": cleanup,
     }
-    
+
     input_strategy: BaseInputStrategy = InputStrategyFactory.create_input_strategy(
         input,
         ocr_strategy,
@@ -219,7 +219,7 @@ def main(
         skip_plot,
         metadata,
         interval=interval,
-        res_priority=res_priority
+        res_priority=res_priority,
     )
 
     directory = input_strategy.process()

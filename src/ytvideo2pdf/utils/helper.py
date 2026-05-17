@@ -1,3 +1,4 @@
+import json
 import os
 import pickle
 import re
@@ -5,18 +6,20 @@ from math import ceil
 from pathlib import Path
 from typing import List
 
-from decord import VideoReader
 import pandas as pd
+from decord import VideoReader
 from PIL import Image
-from pytubefix import Playlist, Search
-from pytubefix import YouTube
+from pytubefix import Playlist, Search, YouTube
 from pytubefix.cli import on_progress
 from sanitize_filename import sanitize
 
 from ytvideo2pdf.utils.constants import BASE_DIR
 from ytvideo2pdf.utils.directory_manager import DirectoryManager
-import json
 
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from ytvideo2pdf.utils.processed_frame import ProcessedFrame
 
 RESOLUTION_PRIORITY_LIST = ["720p", "480p", "360p"]
 
@@ -40,7 +43,7 @@ class Helper:
             if index == 0:
                 return base_res_priority_list
             first_half = base_res_priority_list[:index]
-            second_half = base_res_priority_list[index :]
+            second_half = base_res_priority_list[index:]
             first_half.reverse()
             return second_half + first_half
         return base_res_priority_list
@@ -218,7 +221,7 @@ class Helper:
         ]
 
     @staticmethod
-    def save_objects(video_path, processed_frames, directory):
+    def save_objects(video_path, processed_frames: list["ProcessedFrame"], directory):
         """Save processed_frames to pickle file. Save video path to a text file."""
         python_object_directory = directory + "_python_object"
         DirectoryManager.create_directory(python_object_directory)

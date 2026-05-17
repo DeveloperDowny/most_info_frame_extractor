@@ -207,6 +207,6 @@ class BaseInputStrategy(ABC):
         PostProcessor.convert_images_to_pdf(output_dir, list_of_files, output_pdf_path)
         return output_pdf_path
 
-    def cache_frames_(self, frames):
+    def cache_frames_(self, frames: list[ProcessedFrame]):
         """Save the frames to pickle file along with video path"""
         return Helper.save_objects(self.video_path, frames, self.internal_id)

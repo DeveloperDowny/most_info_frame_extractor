@@ -156,7 +156,9 @@ def main(
     # Parse timestamps if provided
     parsed_timestamps = None
     if timestamps:
+        logger.info(f"Parsing timestamps: {timestamps}")
         parsed_timestamps = parse_timestamps(timestamps)
+        logger.info(f"Parsed timestamps: {parsed_timestamps}")
 
     extraction_strategy_args = {
         "timestamps": parsed_timestamps,

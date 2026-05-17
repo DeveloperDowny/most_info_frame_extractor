@@ -61,6 +61,8 @@ class RateChangeThresholdStrategy(BaseExtractionStrategy):
         
         prevRow = None
         for _, row in df.iterrows():
+            if pd.isna(row["char_count_change"]):
+                continue
             if abs(row["char_count_change"]) < self.threshold:
                 prevRow = row
                 continue

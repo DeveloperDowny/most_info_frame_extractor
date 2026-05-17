@@ -248,7 +248,7 @@ class Helper:
         """Give output pdf path from video name and internal id"""
         video_name_path = Path(video_name)
         output_dir = Path.cwd().joinpath(output_dir).resolve()
-        output_path = output_dir / video_name_path.with_suffix(".pdf")
+        output_path = output_dir / f"{video_name_path.stem}_{internal_id}.pdf"
         return output_path
 
     @staticmethod

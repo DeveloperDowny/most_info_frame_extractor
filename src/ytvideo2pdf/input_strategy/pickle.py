@@ -1,4 +1,5 @@
 import os
+from pathlib import Path
 from typing import List
 
 from ytvideo2pdf.extraction_strategy.base_extraction_strategy import (
@@ -27,7 +28,9 @@ class PickleInput(BaseInputStrategy):
         metadata=dict(),
         **kwargs,
     ):
-        super().__init__(cache_frames=cache_frames, skip_plot=skip_plot, metadata=metadata)
+        super().__init__(
+            cache_frames=cache_frames, skip_plot=skip_plot, metadata=metadata
+        )
         self.directory = os.path.join(BASE_DIR, directory)
         self.ocr_strategy = ocr_strategy
         self.extraction_strategy = extraction_strategy
@@ -42,7 +45,7 @@ class PickleInput(BaseInputStrategy):
         suffix = RandomGenerator.generate_random_word(3)
         new_directory = old_internal_id + "_" + suffix
         DirectoryManager.create_directory(new_directory)
-        return new_directory
+        return Path(new_directory).name
 
     def get_frames(self) -> List[ProcessedFrame]:
         python_object_path = os.path.join(self.directory, "processed_frames.pkl")

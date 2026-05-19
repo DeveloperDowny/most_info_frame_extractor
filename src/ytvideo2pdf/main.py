@@ -5,6 +5,7 @@ from typing import List, Optional
 
 import typer
 from ytvideo2pdf.enums import ExtractionType, InputType, OCRApprovalType, OCRType
+from ytvideo2pdf.utils.constants import BASE_DIR
 from ytvideo2pdf.utils.directory_manager import DirectoryManager
 
 
@@ -222,9 +223,11 @@ def main(
         res_priority=res_priority,
     )
 
-    directory = input_strategy.process()
+    internal_id = input_strategy.process()
+    directory = BASE_DIR / internal_id
 
     if cleanup:
+        directory = str(directory)  # Convert Path object to string for cleanup function
         cleanup_directory(directory)
         cleanup_directory(directory + "_extracted_frames")
         cleanup_directory(directory + "_python_object")

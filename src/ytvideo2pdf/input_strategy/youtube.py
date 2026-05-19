@@ -1,4 +1,5 @@
 import os
+from pathlib import Path
 from typing import List
 
 from ytvideo2pdf.extraction_strategy.base_extraction_strategy import (
@@ -64,7 +65,7 @@ class YouTubeInput(BaseInputStrategy):
         DirectoryManager.create_directory(directory)
 
         Helper.download_youtube_video(self.video_url, directory, self.res_priority)
-        return directory
+        return Path(directory).name
 
     def get_frames(self) -> List[ProcessedFrame]:
         return ProcessedFrame.from_video(

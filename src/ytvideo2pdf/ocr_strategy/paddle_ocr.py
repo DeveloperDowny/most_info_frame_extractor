@@ -9,6 +9,8 @@ try:
     from paddleocr import TextRecognition
 except ImportError:
     TextRecognition = None
+    
+os.environ["PADDLE_PDX_DISABLE_MODEL_SOURCE_CHECK"] = "True"
 
 
 class PaddleOCR(OCRStrategy):

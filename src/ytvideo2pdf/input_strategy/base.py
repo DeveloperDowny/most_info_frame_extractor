@@ -6,6 +6,7 @@ import shutil
 from typing import List, Optional
 
 from ytvideo2pdf.extraction_strategy.base_extraction_strategy import BaseExtractionStrategy
+from ytvideo2pdf.utils.constants import BASE_DIR
 from ytvideo2pdf.utils.data_plotter import DataPlotter
 from ytvideo2pdf.utils.directory_manager import DirectoryManager
 from ytvideo2pdf.utils.helper import Helper
@@ -159,9 +160,9 @@ class BaseInputStrategy(ABC):
         """Plot and save graph of the signal of varying ocr text length"""
         x_data, y_data = ProcessedFrame.get_data_for_plotting(frames)
 
-        plot_directory = self.internal_id + "_plot"
+        plot_directory = BASE_DIR / (self.internal_id + "_plot")
         DirectoryManager.create_directory(plot_directory)
-        plot_output_path = os.path.join(plot_directory, "plot.png")
+        plot_output_path = plot_directory / "plot.png"
 
         DataPlotter.plot_data(
             x_data,

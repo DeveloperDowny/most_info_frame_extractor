@@ -1,4 +1,5 @@
 import os
+from pathlib import Path
 from typing import List
 
 from ytvideo2pdf.extraction_strategy.base_extraction_strategy import (
@@ -30,7 +31,9 @@ class LocalFileInput(BaseInputStrategy):
         metadata=dict(),
         **kwargs,
     ):
-        super().__init__(cache_frames=cache_frames, skip_plot=skip_plot, metadata=metadata)
+        super().__init__(
+            cache_frames=cache_frames, skip_plot=skip_plot, metadata=metadata
+        )
         self.directory = os.path.join(BASE_DIR, directory)
         self.ocr_strategy = ocr_strategy
         self.extraction_strategy = extraction_strategy
@@ -45,12 +48,15 @@ class LocalFileInput(BaseInputStrategy):
         suffix = RandomGenerator.generate_random_word(3)
         new_directory = self.directory + "_" + suffix
         DirectoryManager.create_directory(new_directory)
-        return new_directory
+        return Path(new_directory).name
 
     def get_video_path(self):
         return DirectoryManager.get_video_path(self.directory)
 
     def get_frames(self) -> List[ProcessedFrame]:
         return ProcessedFrame.from_video(
-            self.video_path, self.ocr_strategy, self.ocr_approval_strategy, self.interval
+            self.video_path,
+            self.ocr_strategy,
+            self.ocr_approval_strategy,
+            self.interval,
         )

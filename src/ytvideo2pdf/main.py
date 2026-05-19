@@ -232,6 +232,11 @@ def main(
         cleanup_directory(directory + "_extracted_frames")
         cleanup_directory(directory + "_python_object")
         cleanup_directory(directory + "_plot")
+        
+        pdf_file_path = str(Path(BASE_DIR) / f"{internal_id}.pdf")
+        if Path(pdf_file_path).exists():
+            Path(pdf_file_path).unlink()
+            logger.debug(f"Removed PDF file: {pdf_file_path}")
 
 
 if __name__ == "__main__":

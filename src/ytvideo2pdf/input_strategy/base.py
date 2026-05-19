@@ -2,10 +2,13 @@ import logging
 import os
 from abc import ABC, abstractmethod
 from datetime import datetime
+from pathlib import Path
 import shutil
 from typing import List, Optional
 
-from ytvideo2pdf.extraction_strategy.base_extraction_strategy import BaseExtractionStrategy
+from ytvideo2pdf.extraction_strategy.base_extraction_strategy import (
+    BaseExtractionStrategy,
+)
 from ytvideo2pdf.utils.constants import BASE_DIR
 from ytvideo2pdf.utils.data_plotter import DataPlotter
 from ytvideo2pdf.utils.directory_manager import DirectoryManager
@@ -20,7 +23,9 @@ logger = logging.getLogger()
 
 
 class BaseInputStrategy(ABC):
-    def __init__(self, cache_frames: bool = False, skip_plot: bool = True, metadata=dict()):
+    def __init__(
+        self, cache_frames: bool = False, skip_plot: bool = True, metadata=dict()
+    ):
         self.cache_frames = cache_frames
         self.skip_plot = skip_plot
         self.extraction_strategy: BaseExtractionStrategy = None
@@ -37,7 +42,7 @@ class BaseInputStrategy(ABC):
         # ---- Get video path
         self.video_path = self.get_video_path()
         logger.info(f"Video path: {self.video_path!r}")
-        self.metadata["video_path"] = self.video_path
+        self.metadata["video_path"] = str(self.video_path)
 
         # ---- Save mapping of internal_id to video_path
         logger.info(f"Internal ID for video {self.video_path}: {self.internal_id!r}")
@@ -49,20 +54,22 @@ class BaseInputStrategy(ABC):
         frames = self.get_frames()
         logger.info(f"Number of frames: {len(frames)!r}")
 
-        logger.info(f"Cache frames: {self.cache_frames!r}, Skip plot: {self.skip_plot!r}")
+        logger.info(
+            f"Cache frames: {self.cache_frames!r}, Skip plot: {self.skip_plot!r}"
+        )
         # ---- Cache frames
         if self.cache_frames:
             logger.info(f"Caching frames...")
             cache_dir = self.cache_frames_(frames)
             logger.info(f"Caching frames to {cache_dir!r}")
-            self.metadata["cached_frames_directory"] = cache_dir
+            self.metadata["cached_frames_directory"] = str(cache_dir)
 
         if not self.skip_plot:
             # ---- Plot graph
             logger.info(f"Plotting signal of varying ocr text length...")
             plot_path = self.plot_graph(frames)
             logger.info(f"Plot path: {plot_path!r}")
-            self.metadata["plot_path"] = plot_path
+            self.metadata["plot_path"] = str(plot_path)
 
         # ---- Configuring extraction_strategy
         self.configure_extraction_strategy()
@@ -86,7 +93,9 @@ class BaseInputStrategy(ABC):
             for timestamp in frame_timestamps
         ]
         self.metadata["extracted_frame_timestamps"] = frame_timestamps
-        self.metadata["extracted_frame_formatted_timestamps"] = formatted_frame_timestamps
+        self.metadata["extracted_frame_formatted_timestamps"] = (
+            formatted_frame_timestamps
+        )
 
         if not self.skip_plot:
             # ---- Plotting key frames
@@ -98,7 +107,7 @@ class BaseInputStrategy(ABC):
         logger.info(f"Saving extracted frames...")
         output_dir = self.save_frames(extracted_frames)
         logger.info(f"Extracted frames directory: {output_dir!r}")
-        self.metadata["extracted_frames_directory"] = output_dir
+        self.metadata["extracted_frames_directory"] = str(output_dir)
 
         # ---- Post processing
         logger.info(f"Post processing...")
@@ -109,7 +118,7 @@ class BaseInputStrategy(ABC):
         logger.info(f"Creating PDF...")
         pdf_path = self.create_pdf(output_dir)
         logger.info(f"PDF path: {pdf_path!r}")
-        self.metadata["output_pdf_path"] = pdf_path
+        self.metadata["output_pdf_path"] = str(pdf_path)
         # ---- Save video_path to output_pdf_path mapping
         logger.info(f"PDF for video {self.video_path!r}: {pdf_path!r}")
         video_name = Helper.get_video_name(self.video_path)
@@ -160,7 +169,7 @@ class BaseInputStrategy(ABC):
         """Plot and save graph of the signal of varying ocr text length"""
         x_data, y_data = ProcessedFrame.get_data_for_plotting(frames)
 
-        plot_directory = BASE_DIR / (self.internal_id + "_plot")
+        plot_directory = Path(BASE_DIR) / (self.internal_id + "_plot")
         DirectoryManager.create_directory(plot_directory)
         plot_output_path = plot_directory / "plot.png"
 
@@ -185,7 +194,7 @@ class BaseInputStrategy(ABC):
 
     def save_frames(self, extracted_frames: List[ProcessedFrame]) -> str:
         """Save the extracted frames to a folder"""
-        extracted_frames_directory = self.internal_id + "_extracted_frames"
+        extracted_frames_directory = Path(BASE_DIR) / (self.internal_id + "_extracted_frames")
         DirectoryManager.create_directory(extracted_frames_directory)
 
         Helper.save_extracted_frames(
@@ -203,11 +212,12 @@ class BaseInputStrategy(ABC):
 
     def create_pdf(self, output_dir):
         """Create PDF of the extracted frames"""
-        output_pdf_path = self.internal_id + ".pdf"
+        output_pdf_path = Path(BASE_DIR) / (self.internal_id + ".pdf")
         list_of_files = os.listdir(output_dir)
         PostProcessor.convert_images_to_pdf(output_dir, list_of_files, output_pdf_path)
         return output_pdf_path
 
     def cache_frames_(self, frames: list[ProcessedFrame]):
         """Save the frames to pickle file along with video path"""
-        return Helper.save_objects(self.video_path, frames, self.internal_id)
+        python_object_directory = Path(BASE_DIR) / (self.internal_id + "_python_object")
+        return Helper.save_objects(self.video_path, frames, python_object_directory)

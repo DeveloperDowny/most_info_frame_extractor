@@ -6,7 +6,7 @@ from pathlib import Path
 BASE_DIR = os.getenv("BASE_DIR", None)
 if not BASE_DIR:
     # Use current working directory where the CLI is run from
-    BASE_DIR = Path.cwd().joinpath("data").resolve()
+    BASE_DIR = Path.cwd().joinpath("output").resolve()
 else:
     BASE_DIR = Path(BASE_DIR)
 BASE_DIR.mkdir(exist_ok=True, parents=True)

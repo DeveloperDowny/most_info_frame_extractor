@@ -221,9 +221,8 @@ class Helper:
         ]
 
     @staticmethod
-    def save_objects(video_path, processed_frames: list["ProcessedFrame"], directory):
+    def save_objects(video_path, processed_frames: list["ProcessedFrame"], python_object_directory):
         """Save processed_frames to pickle file. Save video path to a text file."""
-        python_object_directory = directory + "_python_object"
         DirectoryManager.create_directory(python_object_directory)
         python_object_path = os.path.join(
             python_object_directory, "processed_frames.pkl"

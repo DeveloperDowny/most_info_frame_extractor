@@ -1,7 +1,9 @@
+import os
+os.environ["PADDLE_PDX_DISABLE_MODEL_SOURCE_CHECK"] = "True"
+
 import cv2
 import numpy as np
 import tempfile
-import os
 
 from ytvideo2pdf.ocr_strategy.ocr_strategy import OCRStrategy
 
@@ -10,7 +12,6 @@ try:
 except ImportError:
     TextRecognition = None
     
-os.environ["PADDLE_PDX_DISABLE_MODEL_SOURCE_CHECK"] = "True"
 
 
 class PaddleOCR(OCRStrategy):
@@ -19,7 +20,7 @@ class PaddleOCR(OCRStrategy):
             raise ImportError(
                 "Run `pip install video2pdf[paddleocr]` to enable support for paddleocr"
             )
-        self.model = TextRecognition()
+        self.model = TextRecognition(device="gpu")
 
     def extract_text(self, img):
         if isinstance(img, str):

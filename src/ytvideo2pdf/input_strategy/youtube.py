@@ -35,6 +35,8 @@ class YouTubeInput(BaseInputStrategy):
         res_priority: str = "720p",
         **kwargs,
     ):
+        if not video_url:
+            raise ValueError("YouTube video URL must be provided for YouTube input strategy.")
         super().__init__(
             cache_frames=cache_frames, skip_plot=skip_plot, metadata=metadata
         )
@@ -57,7 +59,8 @@ class YouTubeInput(BaseInputStrategy):
             self.extraction_strategy.frame_rate = Helper.get_frame_rate(self.video_path)
 
     def get_video_path(self):
-        return DirectoryManager.get_video_path(self.internal_id)
+        directory = Path(BASE_DIR) / self.internal_id
+        return DirectoryManager.get_video_path(directory)
 
     def create_internal_id(self):
         directory = RandomGenerator.generate_random_word(6)

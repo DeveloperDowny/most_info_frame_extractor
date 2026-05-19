@@ -31,7 +31,7 @@ class PickleInput(BaseInputStrategy):
         super().__init__(
             cache_frames=cache_frames, skip_plot=skip_plot, metadata=metadata
         )
-        self.directory = os.path.join(BASE_DIR, directory)
+        self.directory = Path(BASE_DIR) / directory
         self.ocr_strategy = ocr_strategy
         self.extraction_strategy = extraction_strategy
 
@@ -41,14 +41,14 @@ class PickleInput(BaseInputStrategy):
         return video_path
 
     def create_internal_id(self):
-        old_internal_id = self.directory.rsplit("_", 2)[0]
+        old_internal_id = self.directory.name.rsplit("_", 2)[0]
         suffix = RandomGenerator.generate_random_word(3)
         new_directory = old_internal_id + "_" + suffix
         DirectoryManager.create_directory(new_directory)
         return Path(new_directory).name
 
     def get_frames(self) -> List[ProcessedFrame]:
-        python_object_path = os.path.join(self.directory, "processed_frames.pkl")
+        python_object_path = self.directory / "processed_frames.pkl"
         processed_frames = Helper.load_python_object(python_object_path)
         return processed_frames
 

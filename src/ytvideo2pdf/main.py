@@ -7,7 +7,7 @@ import typer
 from ytvideo2pdf.enums import ExtractionType, InputType, OCRApprovalType, OCRType
 from ytvideo2pdf.utils.constants import BASE_DIR
 from ytvideo2pdf.utils.directory_manager import DirectoryManager
-
+from pathlib import Path
 
 # Create the logger
 logger = logging.getLogger()
@@ -224,7 +224,7 @@ def main(
     )
 
     internal_id = input_strategy.process()
-    directory = BASE_DIR / internal_id
+    directory = Path(BASE_DIR) / internal_id
 
     if cleanup:
         directory = str(directory)  # Convert Path object to string for cleanup function

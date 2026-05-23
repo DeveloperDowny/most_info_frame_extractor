@@ -1,5 +1,6 @@
 import logging
 import os
+from dataclasses import dataclass
 from pathlib import Path
 from typing import List, Optional, Sequence, Union
 
@@ -8,6 +9,23 @@ from ytvideo2pdf.utils.constants import BASE_DIR
 from ytvideo2pdf.utils.directory_manager import DirectoryManager
 
 logger = logging.getLogger(__name__)
+
+
+@dataclass(frozen=True)
+class PipelineOptions:
+    """Optional parameters for running the extraction pipeline."""
+
+    interval: int = 3
+    ocr_approval: OCRApprovalType | str = OCRApprovalType.PHASH
+    ocr: OCRType | str = OCRType.TESSERACT
+    extraction: ExtractionType | str = ExtractionType.RATE_CHANGE_THRESHOLD
+    k: Optional[Union[str, int]] = None
+    timestamps: Optional[Union[str, Sequence[float]]] = None
+    cleanup: bool = True
+    threshold: int | None = 50
+    cache_frames: bool = False
+    skip_plot: bool = True
+    res_priority: str = "720p"
 
 
 def parse_timestamps(timestamps_str: str) -> List[float]:
@@ -39,17 +57,7 @@ def run_pipeline(
     input_type: InputType | str,
     url: Optional[str] = None,
     directory: Optional[str] = None,
-    interval: int = 3,
-    ocr_approval: OCRApprovalType | str = OCRApprovalType.PHASH,
-    ocr: OCRType | str = OCRType.TESSERACT,
-    extraction: ExtractionType | str = ExtractionType.RATE_CHANGE_THRESHOLD,
-    k: Optional[Union[str, int]] = None,
-    timestamps: Optional[Union[str, Sequence[float]]] = None,
-    cleanup: bool = True,
-    threshold: int | None = 50,
-    cache_frames: bool = False,
-    skip_plot: bool = True,
-    res_priority: str = "720p",
+    options: PipelineOptions | None = None,
 ) -> str:
     """Run the extraction pipeline programmatically.
 
@@ -57,17 +65,7 @@ def run_pipeline(
         input_type: Input source type (enum or string).
         url: YouTube video/playlist URL when using the YouTube input.
         directory: Local directory when using local or pickle inputs.
-        interval: Frame sampling interval in seconds.
-        ocr_approval: OCR approval strategy (enum or string).
-        ocr: OCR strategy (enum or string).
-        extraction: Extraction strategy (enum or string).
-        k: Number of key frames or "auto" to infer the count.
-        timestamps: Key frame timestamps as a list or comma-separated string.
-        cleanup: Remove intermediate artifacts after processing.
-        threshold: Threshold for rate-change extraction.
-        cache_frames: Cache extracted frames to disk.
-        skip_plot: Skip generating OCR signal plots.
-        res_priority: Preferred YouTube download resolution (e.g., "720p").
+        options: Optional pipeline parameters (sampling, OCR, extraction, cleanup).
 
     Returns:
         Internal ID for the run (used as the working directory name).
@@ -86,35 +84,41 @@ def run_pipeline(
 
     Helper.setup()
 
-    ocr_value = ocr.value if isinstance(ocr, OCRType) else ocr
+    opts = options or PipelineOptions()
+
+    ocr_value = opts.ocr.value if isinstance(opts.ocr, OCRType) else opts.ocr
     ocr_approval_value = (
-        ocr_approval.value
-        if isinstance(ocr_approval, OCRApprovalType)
-        else ocr_approval
+        opts.ocr_approval.value
+        if isinstance(opts.ocr_approval, OCRApprovalType)
+        else opts.ocr_approval
     )
     extraction_value = (
-        extraction.value if isinstance(extraction, ExtractionType) else extraction
+        opts.extraction.value
+        if isinstance(opts.extraction, ExtractionType)
+        else opts.extraction
     )
 
-    parsed_timestamps = _normalize_timestamps(timestamps)
+    parsed_timestamps = _normalize_timestamps(opts.timestamps)
     if parsed_timestamps is not None:
         logger.info("Parsed timestamps: %s", parsed_timestamps)
 
-    ocr_approval_strategy = OCRApprovalStrategyFactory.create_strategy(ocr_approval)
+    ocr_approval_strategy = OCRApprovalStrategyFactory.create_strategy(
+        opts.ocr_approval
+    )
     ocr_strategy = OCRStrategyFactory.create_ocr_strategy(ocr_value)
 
     extraction_strategy_args = {
         "timestamps": parsed_timestamps,
-        "threshold": threshold,
+        "threshold": opts.threshold,
     }
     extraction_strategy = ExtractionStrategyFactory.create_extraction_strategy(
-        extraction, **extraction_strategy_args
+        opts.extraction, **extraction_strategy_args
     )
 
-    if k == "auto":
+    if opts.k == "auto":
         extraction_strategy.auto_calculate_k = True
-    elif k is not None:
-        extraction_strategy.k = int(k)
+    elif opts.k is not None:
+        extraction_strategy.k = int(opts.k)
 
     if parsed_timestamps:
         extraction_strategy.timestamps = parsed_timestamps
@@ -122,17 +126,17 @@ def run_pipeline(
     logger.info("Input type: %s", input_type)
     logger.info("Video URL: %s", url)
     logger.info("Local directory: %s", directory)
-    logger.info("Interval: %s seconds", interval)
-    logger.info("Resolution priority: %s", res_priority)
+    logger.info("Interval: %s seconds", opts.interval)
+    logger.info("Resolution priority: %s", opts.res_priority)
     logger.info("OCR approval strategy: %s", ocr_approval_value)
     logger.info("OCR strategy: %s", ocr_value)
     logger.info("Extraction strategy: %s", extraction_value)
-    logger.info("Number of key frames to extract (k): %s", k)
+    logger.info("Number of key frames to extract (k): %s", opts.k)
     logger.info("Key frame timestamps: %s", parsed_timestamps)
-    logger.info("Threshold: %s", threshold)
-    logger.info("Cache frames: %s", cache_frames)
-    logger.info("Skip plot: %s", skip_plot)
-    logger.info("Cleanup: %s", cleanup)
+    logger.info("Threshold: %s", opts.threshold)
+    logger.info("Cache frames: %s", opts.cache_frames)
+    logger.info("Skip plot: %s", opts.skip_plot)
+    logger.info("Cleanup: %s", opts.cleanup)
 
     metadata = {
         "input_type": input_type.value
@@ -140,16 +144,16 @@ def run_pipeline(
         else input_type,
         "video_url": url,
         "local_directory": directory,
-        "interval": interval,
+        "interval": opts.interval,
         "ocr_approval_strategy": ocr_approval_value,
         "ocr_strategy": ocr_value,
         "extraction_strategy": extraction_value,
-        "k": k,
+        "k": opts.k,
         "timestamps": parsed_timestamps,
-        "threshold": threshold,
-        "cache_frames": cache_frames,
-        "skip_plot": skip_plot,
-        "cleanup": cleanup,
+        "threshold": opts.threshold,
+        "cache_frames": opts.cache_frames,
+        "skip_plot": opts.skip_plot,
+        "cleanup": opts.cleanup,
     }
 
     input_strategy: BaseInputStrategy = InputStrategyFactory.create_input_strategy(
@@ -159,17 +163,17 @@ def run_pipeline(
         ocr_approval_strategy,
         url,
         directory,
-        cache_frames,
-        skip_plot,
+        opts.cache_frames,
+        opts.skip_plot,
         metadata,
-        interval=interval,
-        res_priority=res_priority,
+        interval=opts.interval,
+        res_priority=opts.res_priority,
     )
 
     internal_id = input_strategy.process()
     directory_path = Path(BASE_DIR) / internal_id
 
-    if cleanup:
+    if opts.cleanup:
         directory_str = str(directory_path)
         cleanup_directory(directory_str)
         cleanup_directory(directory_str + "_extracted_frames")

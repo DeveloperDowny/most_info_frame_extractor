@@ -3,7 +3,7 @@ import sys
 from typing import Optional
 
 import typer
-from ytvideo2pdf.api import run_pipeline
+from ytvideo2pdf.api import PipelineOptions, run_pipeline
 from ytvideo2pdf.enums import ExtractionType, InputType, OCRApprovalType, OCRType
 
 # Create the logger
@@ -96,10 +96,7 @@ def main(
         help="Preferred resolution for YouTube video download (e.g., '720p', '1080p').",
     ),
 ):
-    return run_pipeline(
-        input_type=input,
-        url=url,
-        directory=dir,
+    options = PipelineOptions(
         interval=interval,
         ocr_approval=ocr_approval,
         ocr=ocr,
@@ -111,6 +108,12 @@ def main(
         cache_frames=cache_frames,
         skip_plot=skip_plot,
         res_priority=res_priority,
+    )
+    return run_pipeline(
+        input_type=input,
+        url=url,
+        directory=dir,
+        options=options,
     )
 
 

@@ -11,6 +11,25 @@ pip install ytvideo2pdf
 ## Minimal programmatic usage
 
 ```python
+from ytvideo2pdf import run_pipeline
+
+internal_id = run_pipeline(
+  input_type="youtube",
+  url="https://youtu.be/Z_MLrbI1s2E",
+  interval=3,
+  extraction="prominent_peaks",
+  ocr="tesseract",
+  ocr_approval="phash",
+  k="auto",
+  cleanup=True,
+)
+
+print("Internal ID:", internal_id)
+```
+
+## Advanced programmatic usage
+
+```python
 from ytvideo2pdf.enums import ExtractionType, OCRApprovalType, OCRType
 from ytvideo2pdf.extraction_strategy.extraction_strategy_factory import ExtractionStrategyFactory
 from ytvideo2pdf.ocr_strategy.ocr_strategy_factory import OCRStrategyFactory

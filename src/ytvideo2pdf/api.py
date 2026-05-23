@@ -7,7 +7,6 @@ from typing import List, Optional, Sequence, Union
 from ytvideo2pdf.enums import ExtractionType, InputType, OCRApprovalType, OCRType
 from ytvideo2pdf.utils.constants import BASE_DIR
 from ytvideo2pdf.utils.directory_manager import DirectoryManager
-from ytvideo2pdf.utils.helper import Helper
 
 logger = logging.getLogger(__name__)
 
@@ -29,7 +28,26 @@ class PipelineOptions:
     res_priority: str = "720p"
 
 
+def parse_timestamps(timestamps_str: str) -> List[float]:
+    """Parse comma-separated timestamps into a list of floats.
+
+    Args:
+        timestamps_str: Comma-separated timestamps in seconds.
+
+    Returns:
+        List of parsed timestamps as floats.
+    """
+    if not timestamps_str:
+        return []
+    return [float(ts.strip()) for ts in timestamps_str.split(",") if ts.strip()]
+
+
 def cleanup_directory(directory: str) -> None:
+    """Delete a directory if it exists.
+
+    Args:
+        directory: Path to the directory to remove.
+    """
     if os.path.exists(directory):
         DirectoryManager.delete_directory(directory)
         logger.debug("Cleaned up directory: %s", directory)
@@ -38,10 +56,18 @@ def cleanup_directory(directory: str) -> None:
 def _normalize_timestamps(
     timestamps: Optional[Union[str, Sequence[float]]],
 ) -> Optional[List[float]]:
+    """Normalize timestamp inputs to a list of floats.
+
+    Args:
+        timestamps: Comma-separated string or a sequence of float timestamps.
+
+    Returns:
+        Parsed timestamps list or None when no timestamps are provided.
+    """
     if timestamps is None:
         return None
     if isinstance(timestamps, str):
-        parsed = Helper.parse_timestamps(timestamps)
+        parsed = parse_timestamps(timestamps)
         return parsed if parsed else None
     return list(timestamps)
 
@@ -52,7 +78,7 @@ def run_pipeline(
     url: Optional[str] = None,
     directory: Optional[str] = None,
     options: PipelineOptions | None = None,
-) -> str:
+) -> tuple[str, Path, Path, dict[str, object]]:
     """Run the extraction pipeline programmatically.
 
     Args:
@@ -62,7 +88,8 @@ def run_pipeline(
         options: Optional pipeline parameters (sampling, OCR, extraction, cleanup).
 
     Returns:
-        Internal ID for the run (used as the working directory name).
+        Tuple containing the internal ID, PDF output path, metadata output path,
+        and the updated metadata dictionary.
     """
     from ytvideo2pdf.extraction_strategy.extraction_strategy_factory import (
         ExtractionStrategyFactory,

@@ -2,9 +2,9 @@ import json
 import os
 import pickle
 import re
+import shutil
 from math import ceil
 from pathlib import Path
-import shutil
 from typing import TYPE_CHECKING, Any, Iterable, List, Sequence
 
 import pandas as pd
@@ -19,6 +19,8 @@ from ytvideo2pdf.utils.directory_manager import DirectoryManager
 
 if TYPE_CHECKING:
     from ytvideo2pdf.utils.processed_frame import ProcessedFrame
+
+import plotly.graph_objects as go
 
 RESOLUTION_PRIORITY_LIST = ["720p", "480p", "360p"]
 
@@ -320,3 +322,63 @@ class Helper:
                 dest_file = dest_dir / source_file.name
                 shutil.copy(source_file, dest_file)
                 print(f"Saved {source_file.name} to {dest_dir}")
+
+    @staticmethod
+    def get_frame_char_counts(
+        processed_frames: Sequence["ProcessedFrame"],
+    ) -> tuple[list[int], list[int]]:
+        """Return frame numbers and character counts for all frames."""
+        frame_numbers = [pf.frame_number for pf in processed_frames]
+        char_counts = [pf.char_count for pf in processed_frames]
+        return frame_numbers, char_counts
+
+    @staticmethod
+    def get_extracted_char_counts(
+        processed_frames: Sequence["ProcessedFrame"],
+        extracted_frame_numbers: Sequence[int],
+    ) -> list[int]:
+        """Return character counts for extracted frames only."""
+        extracted_set = set(extracted_frame_numbers)
+        return [
+            pf.char_count for pf in processed_frames if pf.frame_number in extracted_set
+        ]
+
+    @staticmethod
+    def build_char_count_figure(
+        all_frame_numbers: Sequence[int],
+        all_frame_char_counts: Sequence[int],
+        extracted_frame_numbers: Sequence[int],
+        extracted_char_counts: Sequence[int],
+    ) -> go.Figure:
+        """Build a Plotly figure for character counts vs frame number."""
+        import plotly.graph_objects as go
+
+        fig = go.Figure()
+
+        fig.add_trace(
+            go.Scatter(
+                x=list(all_frame_numbers),
+                y=list(all_frame_char_counts),
+                mode="lines",
+                name="Full Video Character Count",
+                line=dict(color="lightgray"),
+            )
+        )
+
+        fig.add_trace(
+            go.Scatter(
+                x=list(extracted_frame_numbers),
+                y=list(extracted_char_counts),
+                mode="markers",
+                name="Extracted Frames",
+                marker=dict(size=10, color="red", symbol="circle"),
+            )
+        )
+
+        fig.update_layout(
+            title="Character Count vs. Frame Number (Highlighted Extracted Frames)",
+            xaxis_title="Frame Number",
+            yaxis_title="Character Count",
+            hovermode="x unified",
+        )
+        return fig

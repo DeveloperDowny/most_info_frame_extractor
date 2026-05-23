@@ -11,20 +11,24 @@ pip install ytvideo2pdf
 ## Minimal programmatic usage
 
 ```python
-from ytvideo2pdf import run_pipeline
+from ytvideo2pdf import PipelineOptions, run_pipeline
 
-internal_id = run_pipeline(
+internal_id, pdf_path, metadata_path, metadata = run_pipeline(
   input_type="youtube",
   url="https://youtu.be/Z_MLrbI1s2E",
-  interval=3,
-  extraction="prominent_peaks",
-  ocr="tesseract",
-  ocr_approval="phash",
-  k="auto",
-  cleanup=True,
+  options=PipelineOptions(
+    interval=3,
+    extraction="prominent_peaks",
+    ocr="tesseract",
+    ocr_approval="phash",
+    k="auto",
+    cleanup=True,
+  ),
 )
 
 print("Internal ID:", internal_id)
+print("PDF:", pdf_path)
+print("Metadata:", metadata_path)
 ```
 
 ## Advanced programmatic usage
@@ -61,7 +65,7 @@ print("Internal ID:", internal_id)
 
 ### Return value
 
-`process()` returns an `internal_id` string (the working directory under `data/`). The PDF and metadata JSON are copied to `output/` in the current working directory.
+`run_pipeline()` returns a tuple of `(internal_id, pdf_path, metadata_path, metadata)`. The PDF and metadata JSON are copied to `output/` in the current working directory.
 
 ## Core modules
 

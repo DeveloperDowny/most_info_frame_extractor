@@ -140,7 +140,7 @@ class BaseInputStrategy(ABC):
             f"Metadata for video {video_name!r} saved at {str(metadata_output_path)}"
         )
 
-        return self.internal_id
+        return self.internal_id, pdf_output_path, metadata_output_path, self.metadata
 
     @abstractmethod
     def get_video_path(self):
@@ -194,7 +194,9 @@ class BaseInputStrategy(ABC):
 
     def save_frames(self, extracted_frames: List[ProcessedFrame]) -> str:
         """Save the extracted frames to a folder"""
-        extracted_frames_directory = Path(BASE_DIR) / (self.internal_id + "_extracted_frames")
+        extracted_frames_directory = Path(BASE_DIR) / (
+            self.internal_id + "_extracted_frames"
+        )
         DirectoryManager.create_directory(extracted_frames_directory)
 
         Helper.save_extracted_frames(

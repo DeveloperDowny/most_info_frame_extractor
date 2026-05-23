@@ -4,7 +4,8 @@ import pickle
 import re
 from math import ceil
 from pathlib import Path
-from typing import List
+import shutil
+from typing import TYPE_CHECKING, Any, Iterable, List, Sequence
 
 import pandas as pd
 from decord import VideoReader
@@ -16,8 +17,6 @@ from sanitize_filename import sanitize
 from ytvideo2pdf.utils.constants import BASE_DIR
 from ytvideo2pdf.utils.directory_manager import DirectoryManager
 
-from typing import TYPE_CHECKING
-
 if TYPE_CHECKING:
     from ytvideo2pdf.utils.processed_frame import ProcessedFrame
 
@@ -26,7 +25,7 @@ RESOLUTION_PRIORITY_LIST = ["720p", "480p", "360p"]
 
 class Helper:
     @staticmethod
-    def setup():
+    def setup() -> None:
         output_directory = BASE_DIR
         DirectoryManager.create_directory(output_directory)
 
@@ -74,7 +73,7 @@ class Helper:
         return os.path.join(directory, video_file_name)
 
     @staticmethod
-    def save_image(frame_output_path, frame_number, video_path):
+    def save_image(frame_output_path: str, frame_number: int, video_path: str) -> None:
         video_reader = VideoReader(video_path)
         if frame_number < 0 or frame_number >= len(video_reader):
             return
@@ -82,7 +81,11 @@ class Helper:
         Image.fromarray(frame_rgb).save(frame_output_path)
 
     @staticmethod
-    def save_extracted_frames(extracted_frames, video_path, extracted_frames_directory):
+    def save_extracted_frames(
+        extracted_frames: Iterable["ProcessedFrame"],
+        video_path: str,
+        extracted_frames_directory: str,
+    ) -> None:
         """For all timestamps, reads the corresponding frame of the video and saves it to the dir"""
         frame_numbers = {frame_info.frame_number for frame_info in extracted_frames}
         if not frame_numbers:
@@ -113,25 +116,25 @@ class Helper:
         return text
 
     @staticmethod
-    def save_python_objects(python_objects, python_object_path):
+    def save_python_objects(python_objects: Any, python_object_path: str) -> None:
         """Save python object to pickle file"""
         with open(python_object_path, "wb") as f:
             pickle.dump(python_objects, f)
 
     @staticmethod
-    def save_text(text, text_file_path):
+    def save_text(text: str, text_file_path: str) -> None:
         """Save text to text file"""
         with open(text_file_path, "w") as f:
             f.write(text)
 
     @staticmethod
-    def append_text(text, text_file_path):
+    def append_text(text: str, text_file_path: str) -> None:
         """Append text to text file"""
         with open(text_file_path, "a") as f:
             f.write(text)
 
     @staticmethod
-    def index_results(directory, video_file_path):
+    def index_results(directory: str, video_file_path: str) -> None:
         """Save directory to video name mapping"""
         result_file_path = Path(BASE_DIR) / "results.csv"
 
@@ -151,19 +154,19 @@ class Helper:
         )
 
     @staticmethod
-    def load_python_object(python_object_path):
+    def load_python_object(python_object_path: str) -> Any:
         """Load python object from pickle file"""
         with open(python_object_path, "rb") as f:
             return pickle.load(f)
 
     @staticmethod
-    def load_text(text_file_path):
+    def load_text(text_file_path: str) -> str:
         """Load text from text file"""
         with open(text_file_path, "r") as f:
             return f.read()
 
     @staticmethod
-    def get_video_urls_from_playlist(playlist_url: str) -> list:
+    def get_video_urls_from_playlist(playlist_url: str) -> list[str]:
         """Get video urls from YouTube playlist"""
         playlist = Playlist(playlist_url)
         return playlist.video_urls
@@ -198,7 +201,7 @@ class Helper:
         return ceil(video_duration / seconds_per_slide)
 
     @staticmethod
-    def get_key_moments(video_url: str) -> list:
+    def get_key_moments(video_url: str) -> list[int]:
         """Get the key moments for the video"""
         video = YouTube(video_url)
         key_moments = video.key_moments
@@ -208,12 +211,14 @@ class Helper:
         return key_moment_start_seconds
 
     @staticmethod
-    def get_frame_number_from_seconds(seconds: float, frame_rate: int) -> int:
+    def get_frame_number_from_seconds(seconds: float, frame_rate: float) -> int:
         """Get approximate frame number for the timestamp"""
         return round(seconds * frame_rate)
 
     @staticmethod
-    def get_key_frame_numbers(timestamps: List[float], frame_rate):
+    def get_key_frame_numbers(
+        timestamps: Sequence[float], frame_rate: float
+    ) -> list[int]:
         """Get key frame numbers from timestamps."""
         return [
             Helper.get_frame_number_from_seconds(seconds, frame_rate)
@@ -221,7 +226,11 @@ class Helper:
         ]
 
     @staticmethod
-    def save_objects(video_path, processed_frames: list["ProcessedFrame"], python_object_directory):
+    def save_objects(
+        video_path: str,
+        processed_frames: list["ProcessedFrame"],
+        python_object_directory: str,
+    ) -> str:
         """Save processed_frames to pickle file. Save video path to a text file."""
         DirectoryManager.create_directory(python_object_directory)
         python_object_path = os.path.join(
@@ -235,7 +244,7 @@ class Helper:
         return python_object_directory
 
     @staticmethod
-    def get_video_name(video_path):
+    def get_video_name(video_path: str) -> str:
         """Give video name from video_path"""
         video_name = os.path.basename(video_path)
         return video_name
@@ -251,13 +260,13 @@ class Helper:
         return output_path
 
     @staticmethod
-    def get_frame_rate(video_path):
+    def get_frame_rate(video_path: str) -> float:
         """Give video frame rate from video_path"""
         video_reader = VideoReader(video_path)
         return float(video_reader.get_avg_fps() or 0.0)
 
     @staticmethod
-    def get_video_id(video_name: str):
+    def get_video_id(video_name: str) -> str:
         try:
             video = Search(video_name).videos[0]
         except IndexError:
@@ -265,8 +274,49 @@ class Helper:
         return video.video_id
 
     @staticmethod
-    def save_json(data, json_file_path):
+    def save_json(data: Any, json_file_path: str) -> None:
         """Save data to json file"""
 
         with open(json_file_path, "w") as f:
             json.dump(data, f, indent=4)
+
+    @staticmethod
+    def load_json(file_path: str) -> dict[str, Any]:
+        """Load data from json file"""
+        with open(file_path, "r") as file:
+            data = json.load(file)
+        return data
+
+    @staticmethod
+    def parse_timestamps(timestamps_str: str) -> List[float]:
+        """Parse comma-separated timestamps into a list of floats."""
+        if not timestamps_str:
+            return []
+        return [float(ts.strip()) for ts in timestamps_str.split(",") if ts.strip()]
+
+    @staticmethod
+    def get_internal_id_from_results() -> str:
+        results_file = Path(BASE_DIR) / "results.csv"
+        results_df = pd.read_csv(results_file, sep="\t")
+        return results_df["internal_id"][0]
+
+    @staticmethod
+    def copy_output_files(
+        internal_id: str | None = None, dest_dir: Path | None = None
+    ) -> None:
+        source_dir = Path(BASE_DIR)
+
+        # Create destination directory if it doesn't exist
+        dest_dir.mkdir(parents=True, exist_ok=True)
+
+        # Copy files from local output to Drive
+        for source_file in source_dir.iterdir():
+            if source_file.is_file():
+                if internal_id:
+                    if internal_id not in source_file.name:
+                        continue
+                    if source_file.name == f"{internal_id}.pdf":
+                        continue
+                dest_file = dest_dir / source_file.name
+                shutil.copy(source_file, dest_file)
+                print(f"Saved {source_file.name} to {dest_dir}")

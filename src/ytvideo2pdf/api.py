@@ -7,6 +7,7 @@ from typing import List, Optional, Sequence, Union
 from ytvideo2pdf.enums import ExtractionType, InputType, OCRApprovalType, OCRType
 from ytvideo2pdf.utils.constants import BASE_DIR
 from ytvideo2pdf.utils.directory_manager import DirectoryManager
+from ytvideo2pdf.utils.helper import Helper
 
 logger = logging.getLogger(__name__)
 
@@ -28,13 +29,6 @@ class PipelineOptions:
     res_priority: str = "720p"
 
 
-def parse_timestamps(timestamps_str: str) -> List[float]:
-    """Parse comma-separated timestamps into a list of floats."""
-    if not timestamps_str:
-        return []
-    return [float(ts.strip()) for ts in timestamps_str.split(",") if ts.strip()]
-
-
 def cleanup_directory(directory: str) -> None:
     if os.path.exists(directory):
         DirectoryManager.delete_directory(directory)
@@ -47,7 +41,7 @@ def _normalize_timestamps(
     if timestamps is None:
         return None
     if isinstance(timestamps, str):
-        parsed = parse_timestamps(timestamps)
+        parsed = Helper.parse_timestamps(timestamps)
         return parsed if parsed else None
     return list(timestamps)
 
@@ -170,7 +164,9 @@ def run_pipeline(
         res_priority=opts.res_priority,
     )
 
-    internal_id = input_strategy.process()
+    internal_id, pdf_output_path, metadata_output_path, updated_metadata = (
+        input_strategy.process()
+    )
     directory_path = Path(BASE_DIR) / internal_id
 
     if opts.cleanup:
@@ -185,4 +181,4 @@ def run_pipeline(
             Path(pdf_file_path).unlink()
             logger.debug("Removed PDF file: %s", pdf_file_path)
 
-    return internal_id
+    return internal_id, pdf_output_path, metadata_output_path, updated_metadata
